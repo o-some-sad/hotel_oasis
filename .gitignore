@@ -8,6 +8,7 @@
 /storage/pail
 /vendor
 .env
+.env.example
 .env.backup
 .env.production
 .phpactor.json
@@ -24,3 +25,4 @@ yarn-error.log
 /.zed
 
 /vendor
+
