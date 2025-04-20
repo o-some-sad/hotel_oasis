@@ -12,7 +12,6 @@ class ManageReceptionistController extends Controller
     public function index()
     {
         $receptionists = User::role('admin')->with('manager')->get();
-        print ($receptionists);
         if ($receptionists->isEmpty()) {
             return Inertia::render('manageReceptionists/Index', [
                 'receptionists' => [],
