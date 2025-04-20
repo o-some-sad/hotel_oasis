@@ -15,13 +15,21 @@ const page = usePage<SharedData>();
         <SidebarGroupLabel>Platform</SidebarGroupLabel>
         <SidebarMenu>
             <SidebarMenuItem v-for="item in items" :key="item.title">
-                <SidebarMenuButton 
+                <SidebarMenuButton
                     as-child :is-active="item.href === page.url"
                     :tooltip="item.title"
                 >
                     <Link :href="item.href">
                         <component :is="item.icon" />
                         <span>{{ item.title }}</span>
+                    </Link>
+                </SidebarMenuButton>
+            </SidebarMenuItem>
+            <SidebarMenuItem>
+                <SidebarMenuButton as-child>
+                    <Link :href="'/receptionists'">
+                        <rect x="10" y="10" width="50" height="50" fill="transparent" stroke="blue" />
+                        <text x="20" y="40" fill="blue">Manage Receptionists</text>
                     </Link>
                 </SidebarMenuButton>
             </SidebarMenuItem>
