@@ -22,4 +22,4 @@ require __DIR__.'/auth.php';
 //    Route::resource('receptionists', ManageReceptionistController::class);
 //});
 
-Route::resource( 'receptionists', ManageReceptionistController::class)->middleware(['auth', 'can:manage-receptionists']);
+Route::resource( 'receptionists', ManageReceptionistController::class)->middleware('auth');

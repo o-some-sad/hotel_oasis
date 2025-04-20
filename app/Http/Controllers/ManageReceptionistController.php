@@ -5,8 +5,13 @@ use Inertia\Inertia;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Resources\ReceptionistResource;
-use App\Http\Requests\ReceiptionistRequest;
+use App\Http\Requests\StoreReceiptionistRequest;
+use App\Http\Requests\UpdateReceptionistRequest;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
+
+
 
 
 
@@ -14,108 +19,117 @@ class ManageReceptionistController extends Controller
 {
     public function index()
     {
+        if(auth()->user()->role ==='admin' || auth()->user()->role ==='manager') {
 
-            $receptionists = User::role('admin')->with('manager')->where('deleted_at', null)->get();
+            $receptionists = User::where('role', 'receptionist')->with('manager')->get();
             if ($receptionists->isEmpty()) {
                 return Inertia::render('manageReceptionists/Index', [
                     'receptionists' => [],
                     'message' => 'No receptionists found.'
                 ]);
             }
-
             return Inertia::render('manageReceptionists/Index', [
                 'receptionists' => ReceptionistResource::collection($receptionists)->toArray(request())
             ]);
+        }
+        abort(403);
+
     }
 
 
     public function create()
     {
+        if(auth()->user()->role ==='admin' || auth()->user()->role ==='manager') {
             return Inertia::render('manageReceptionists/Create');
-
-    }
-
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(ReceiptionistRequest $request)
-    {
-        if (auth()->user()->role !== 'admin') {
+        }
         abort(403);
     }
+
+
+    public function store(StoreReceiptionistRequest $request)
+    {
+        $request->authorize();
         $validated = $request->validated();
+
         if ($request->hasFile('avatar_image')) {
             $path = $request->file('avatar_image')->store('receptionists', 'public');
             $validated['avatar_img'] = $path;
-        } else {
-            if ($validated['gender'] === 'Male') {
-                $validated['avatar_img'] = 'https://media.istockphoto.com/id/1142192548/vector/man-avatar-profile-male-face-silhouette-or-icon-isolated-on-white-background-vector.jpg?s=612x612&w=0&k=20&c=DUKuRxK9OINHXt3_4m-GxraeoDDlhNuCbA9hp6FotFE=';
-            } elseif ($validated['gender'] === 'Female') {
-                $validated['avatar_img'] = 'https://www.shutterstock.com/image-vector/business-woman-icon-avatar-symbol-600nw-790518412.jpg';
-            }
         }
-        $validated['password'] = \Hash::make($validated['password']);
+
+        $validated['password'] = Hash::make($validated['password']);
 
         $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
-            'password' => Hash::make($validated['password']),
+            'password' => $validated['password'],
             'national_id' => $validated['national_id'],
-            'avatar_img' => $validated['avatar_img'],
-            'gender' => $validated['gender'] ?? null,
+            'avatar_img' => $validated['avatar_img'] ,
+            'gender' => $validated['gender']  ,
             'created_by' => auth()->id(),
             'mobile' => $validated['mobile'],
             'country' => $validated['country'],
-            'role'=>'receptionist',
+            'role' => 'receptionist',
+
         ]);
 
-        return Inertia::render('manageReceptionists/Index');
-
+        return Inertia::location(route('receptionists.index'));
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(User $user)
-    {
-        //
-    }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit($id)
+    public function edit($id,UpdateReceptionistRequest $request)
     {
-//        $user = User::findOrFail($id);
-//
-//        return Inertia::render('Receptionists/Edit', [
-//            'user' => $user,
-//        ]);
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, $id)
-    {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $id,
+        $request->authorize();
+        $receptionist = User::findOrFail($id);
+        return Inertia::render('manageReceptionists/Edit', [
+            'receptionist' => $receptionist,
         ]);
-
-        $user = User::findOrFail($id);
-        $user->update($request->only('name', 'email'));
-
-        return redirect()->route('receptionists.index')->with('message', 'User updated successfully!');
     }
 
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(User $user)
+    public function update(UpdateReceptionistRequest $request, $id)
     {
-        //
+        $request->authorize();
+
+        $receptionist = User::findOrFail($id);
+        $validated = $request->validated();
+
+        if (isset($validated['banned_at'])) {
+            $bannedAt = $validated['banned_at'] === null ? null : now();
+            $receptionist->update(['banned_at' => $bannedAt]);
+
+            $message = $bannedAt ? 'Receptionist banned successfully.' : 'Receptionist unbanned successfully.';
+            return redirect()->route('receptionists.index')->with('message', $message);
+        }
+
+        if ($request->hasFile('avatar_img')) {
+            if ($receptionist->avatar_img) {
+                Storage::disk('public')->delete($receptionist->avatar_img);
+            }
+
+            $path = $request->file('avatar_img')->store('receptionists', 'public');
+            $validated['avatar_img'] = $path;
+        }
+
+        $dirtyData = collect($validated)->filter(function ($value, $key) use ($receptionist) {
+            return $receptionist->$key !== $value;
+        })->toArray();
+
+        if (!empty($dirtyData)) {
+            $receptionist->update($dirtyData);
+        }
+
+        return redirect()->route('receptionists.index')->with('message', 'Receptionist updated successfully.');
     }
+
+    public function destroy($id,UpdateReceptionistRequest $request)
+    {
+        $request->authorize();
+        $receptionist = User::findOrFail($id);
+        if ($receptionist->avatar_img) {
+            Storage::disk('public')->delete($receptionist->avatar_img);
+        }
+        $receptionist->delete();
+        return redirect()->route('receptionists.index')->with('message', 'Receptionist deleted successfully.');
+    }
+
 }
