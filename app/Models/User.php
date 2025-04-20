@@ -35,6 +35,7 @@ class User extends Authenticatable
         'approved_by' ,
         'banned_at' ,
         'deleted_at',
+        'role',
     ];
 
     /**

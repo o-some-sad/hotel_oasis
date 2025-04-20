@@ -1,31 +1,55 @@
 <script setup>
 import { useForm } from '@inertiajs/vue3'
+import { defineProps, onMounted } from 'vue'
+
+const props = defineProps({
+    receptionist: Object
+})
 
 const form = useForm({
-    name: '',
-    email: '',
-    password: '',
-    national_id: '',
+    _method: 'patch',
+    name: null,
+    email: null,
+    national_id: null,
     avatar_img: null,
-    gender: '',
-    mobile: '',
-    country: '',
+    gender: null,
+    mobile: null,
+    country: null
+})
+
+onMounted(() => {
+    form.name = props.receptionist.name
+    form.email = props.receptionist.email
+    form.national_id = props.receptionist.national_id
+    form.avatar_img = props.receptionist.avatar_img
+    form.gender = props.receptionist.gender
+    form.mobile = props.receptionist.mobile
+    form.country = props.receptionist.country
 })
 
 function submit() {
-    form.post(route('receptionists.store'), {
+    if (!form.avatar_img) {
+        delete form.avatar_img;
+    }
+    form.post(route('receptionists.update', props.receptionist.id), {
+        forceFormData: true,
         onSuccess: () => {
             window.location.href = '/receptionists';
         }
-    });
+    })
 }
 </script>
+<style>
+input:disabled {
+    color:#a1a09a;
+}
+</style>
 
 <template>
     <div class="max-w-xl mx-auto bg-white shadow-lg rounded-xl p-6 space-y-4">
-        <h2 class="text-2xl font-bold text-center text-blue-600">Add Receptionist</h2>
+        <h2 class="text-2xl font-bold text-center text-blue-600">Edit Receptionist</h2>
 
-        <form @submit.prevent="submit" class="space-y-4" enctype="multipart/form-data">
+        <form @submit.prevent="submit" class="space-y-4" enctype="multipart/form-data" >
             <!-- Name -->
             <div>
                 <label class="block text-gray-700">Name</label>
@@ -51,19 +75,6 @@ function submit() {
                 <span v-if="form.errors.email" class="text-red-500 text-sm">{{ form.errors.email }}</span>
             </div>
 
-            <!-- Password -->
-            <div>
-                <label class="block text-gray-700">Password</label>
-                <input
-                    autocomplete="new-password"
-                    v-model="form.password"
-                    type="password"
-                    class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    name="password"
-                />
-                <span v-if="form.errors.password" class="text-red-500 text-sm">{{ form.errors.password }}</span>
-            </div>
-
             <!-- National ID -->
             <div>
                 <label class="block text-gray-700">National ID</label>
@@ -71,6 +82,7 @@ function submit() {
                     v-model="form.national_id"
                     type="text"
                     class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    :disabled="true"
                     name="national_id"
                 />
                 <span v-if="form.errors.national_id" class="text-red-500 text-sm">{{ form.errors.national_id }}</span>
@@ -130,10 +142,10 @@ function submit() {
             <div class="text-center">
                 <button
                     type="submit"
-                    class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition duration-300"
+                    class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition duration-300"
                     :disabled="form.processing"
                 >
-                    Submit
+                    Update
                 </button>
             </div>
         </form>

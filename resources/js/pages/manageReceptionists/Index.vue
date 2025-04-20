@@ -23,12 +23,17 @@ const headers = computed(() => {
 })
 
 function handleBan(receptionist) {
-    router.get(`/receptionists/${receptionist.id}`)
+    router.patch(`/receptionists/${receptionist.id}`, {
+        banned_at: new Date().toISOString(),
+    });
 }
 
 function handleUnban(receptionist) {
-    router.get(`/receptionists/${receptionist.id}`)
+    router.patch(`/receptionists/${receptionist.id}`, {
+        banned_at: null
+    });
 }
+
 
 function handleDelete(receptionist) {
     if (confirm('Are you sure you want to delete this receptionist?')) {
@@ -37,8 +42,10 @@ function handleDelete(receptionist) {
 }
 
 function handleUpdate(receptionist) {
-    router.get(`/receptionists/${receptionist.id}/edit/`)
+    console.log(receptionist.id);
+    router.get(route('receptionists.edit', receptionist.id)) // ✅ صح
 }
+
 
 function handleAddNewUser() {
     router.get('/receptionists/create')
@@ -62,7 +69,6 @@ function handleAddNewUser() {
             </button>
         </div>
 
-        <!-- الجدول البيانات -->
         <div v-if="!message" class="overflow-x-auto shadow-md rounded-lg">
             <DataTable
                 :headers="headers"
