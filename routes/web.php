@@ -3,7 +3,23 @@
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\ManageReceptionistController;
+use App\Http\Middleware\EnsureUserHasRole;
 
+Route::get('/admin', function () {
+    // ...
+})->middleware([EnsureUserHasRole::class, 'ensureUserHasRole:admin']);
+
+Route::get('/manager', function () {
+    // ...
+})->middleware([EnsureUserHasRole::class, 'ensureUserHasRole:manager']);
+
+Route::get('/receptionist', function () {
+    // ...
+})->middleware([EnsureUserHasRole::class, 'ensureUserHasRole:receptionist']);
+
+Route::get('/client', function () {
+    // ...
+})->middleware([EnsureUserHasRole::class, 'ensureUserHasRole:client']);
 
 
 Route::get('/', function () {
