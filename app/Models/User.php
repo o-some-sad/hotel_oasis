@@ -47,4 +47,8 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+    public function manager()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
 }
