@@ -30,6 +30,8 @@ class AdminSeeder extends Seeder
             'email_verified_at' => now(),
             'created_by' => 1,
             'approved_by' => 1
-        ]);        
+        ]);     
+
+        $admin->assignRole($adminRole);   
     }
 }
