@@ -12,11 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->integer('mobile')->unique();
-            $table->string('national_id')->unique();
-            $table->string('avatar_img')->nullable();
-            $table->string('country')->nullable();
-            $table->enum('gender', ['male', 'female'])->nullable();
+            $table->string('mobile', 255)->unique();
+            $table->char('national_id', 14)->unique();
+            $table->string('avatar_img');
+            $table->char('country', 3);
+            $table->enum('gender', ['male', 'female']);
             $table->boolean('is_approved')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('approved_by')->nullable();
