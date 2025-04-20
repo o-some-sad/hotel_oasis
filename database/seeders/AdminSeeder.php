@@ -17,21 +17,22 @@ class AdminSeeder extends Seeder
         //TODO: implement AdminSeeder logic after designing database structure
         // email: admin@admin.com
         // password: 123456
-        echo "creating admin";
-        $adminRole = Role::firstOrCreate(['name' => 'admin']);
         $admin = User::firstOrCreate([
             'email' => 'admin@admin.com',
         ], [
             'id' => 1,
+            'role' => 'admin',
             'name' => 'Admin',
             'email' => 'admin@admin.com',
             'password' => bcrypt('123456'),
             'is_approved' => true,
             'email_verified_at' => now(),
-            'created_by' => 1,
-            'approved_by' => 1
+           'mobile' => '+1234567890',
+           'national_id' => '00000000000000',
+           'avatar_img' => '/public/avatar.png',
+           'country' => 'XXX',
+           'gender' => 'male',
         ]);     
 
-        $admin->assignRole($adminRole);   
     }
 }
