@@ -17,9 +17,8 @@ Route::get('dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 
-// Route::get('/approved-clients', [ApproveClientsController::class, 'approvedClients'])->middleware(['auth', 'verified'])->name('approved-clients');
 
-Route::resource("approved-clients", ApprovedClientsController::class);
+Route::resource("approved-clients", ApprovedClientsController::class)->middleware(["auth","verified"]);
 
 require __DIR__ . '/settings.php';
 require __DIR__ . '/auth.php';
