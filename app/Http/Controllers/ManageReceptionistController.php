@@ -11,10 +11,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 
-
-
-
-
 class ManageReceptionistController extends Controller
 {
     public function index()
@@ -132,4 +128,36 @@ class ManageReceptionistController extends Controller
         return redirect()->route('receptionists.index')->with('message', 'Receptionist deleted successfully.');
     }
 
+    public function ban($id)
+    {
+        $receptionist = User::findOrFail($id);
+        
+        // Check if user is authorized to ban this receptionist
+        if (auth()->user()->role !== 'admin' && auth()->id() !== $receptionist->created_by) {
+            return redirect()->back()->with('error', 'You are not authorized to ban this receptionist.');
+        }
+
+        // Ban the receptionist with a comment
+        $receptionist->ban([
+            'comment' => 'Banned by ' . auth()->user()->name,
+            'created_by_id' => auth()->id(),
+        ]);
+
+        return redirect()->route('receptionists.index')->with('message', 'Receptionist banned successfully.');
+    }
+
+    public function unban($id)
+    {
+        $receptionist = User::findOrFail($id);
+        
+        // Check if user is authorized to unban this receptionist
+        if (auth()->user()->role !== 'admin' && auth()->id() !== $receptionist->created_by) {
+            return redirect()->back()->with('error', 'You are not authorized to unban this receptionist.');
+        }
+
+        // Unban the receptionist
+        $receptionist->unban();
+
+        return redirect()->route('receptionists.index')->with('message', 'Receptionist unbanned successfully.');
+    }
 }
