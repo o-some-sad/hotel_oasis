@@ -84,12 +84,16 @@ const columns: ColumnDef<RowData>[] = [
         id: 'actions',
         enableHiding: false,
         cell: ({ row }) => {
-            const payment = row.original;
+            return h('h1', 
+                h(Button, {
+                    onClick: () => {
+                        
+                        
+                    }
+                }, "View")
 
-            return h('h1', {
-                payment,
-                onExpand: row.toggleExpanded,
-            }, "h");
+
+            );
         },
     },
 ];
