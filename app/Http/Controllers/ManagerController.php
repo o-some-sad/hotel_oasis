@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use App\Http\Requests\StoreManagerRequest;
 
 class ManagerController extends Controller
 {
@@ -18,9 +19,7 @@ class ManagerController extends Controller
     public function index()
 
     {
-        //
-        
-        // dd($managers);
+
         return Inertia::render('Manager/Index', [
             'managers' => User::select([
                 'id',
@@ -38,19 +37,14 @@ class ManagerController extends Controller
             ->latest()
             ->paginate(10),
         ]);
-    //     return response()->json(
-    //         User::select([
-    //             'id',
-    //             'name',
-    //             'email',
-    //             'national_id',
-    //             'avatar_img',
-    //             'mobile',
-    //             'country',
-    //         ])->where('role', 'manager')
-    //         ->latest()
-    //         ->paginate(10)
-    //     );
-    // }
+
     }
+    public function create()
+    {
+        return Inertia::render('Manager/Create');
+    }
+    public function store(StoreManagerRequest $request)
+    {
+    }
+
 }

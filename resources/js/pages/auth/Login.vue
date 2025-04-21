@@ -44,15 +44,22 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { useForm, usePage } from '@inertiajs/vue3';
-import { Head } from '@inertiajs/vue3';
+// import { Head as InertiaHead } from '@inertiajs/vue3';
 
 interface FormData {
     email: string;
     password: string;
 }
+/**
+ * export default defineComponent({
+    components: { InertiaHead },
+});
+ */
 
 export default defineComponent({
-    components: { Head },
+    components: {  },
+
+    
     setup() {
         const form = useForm<FormData>({
             email: '',
@@ -62,12 +69,15 @@ export default defineComponent({
         const submit = () => {
             form.post(route('login'), {
                 onFinish: () => form.reset('password'),
+                onError: (errors) => {
+                    console.error('Login failed:', errors);
+                }
             });
         };
 
         const { props } = usePage();
         const canResetPassword = route().has('password.request');
-        const status = props.value.status as string | undefined;
+        const status = (props.value?.status ?? '') as string;
 
         return { form, submit, canResetPassword, status };
     },

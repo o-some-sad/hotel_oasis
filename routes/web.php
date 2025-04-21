@@ -27,5 +27,8 @@ require __DIR__.'/auth.php';
 Route::get('/managers', [ManagerController::class, 'index'])
     ->middleware('auth')
     ->name('managers.index');
+Route::get('/managers/create', [ManagerController::class, 'create'])
+    ->middleware('auth')
+    ->name('managers.create');
 
 Route::resource( 'receptionists', ManageReceptionistController::class)->middleware('auth');
