@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\ManageReceptionistController;
 use App\Http\Controllers\ManagerController;
+use App\Http\Controllers\ClientController;
 
 
 
@@ -40,3 +41,45 @@ Route::post('receptionists/{id}/ban', [ManageReceptionistController::class, 'ban
 Route::post('receptionists/{id}/unban', [ManageReceptionistController::class, 'unban'])
     ->middleware('auth')
     ->name('receptionists.unban');
+
+// Client management routes
+// Route::resource('clients', ClientController::class)->middleware('auth');
+
+// Ban/unban routes for clients
+Route::post('clients/{id}/ban', [ClientController::class, 'ban'])
+    ->middleware('auth')
+    ->name('clients.ban');
+
+Route::post('clients/{id}/unban', [ClientController::class, 'unban'])
+    ->middleware('auth')
+    ->name('clients.unban');
+
+Route::get('/clients', [ClientController::class, 'index'])
+    ->middleware('auth')
+    ->name('clients.index');
+Route::post('/clients', [ClientController::class, 'store'])
+    ->middleware('auth')
+    ->name('clients.store');
+Route::put('/clients/{id}', [ClientController::class, 'update'])
+    ->middleware('auth')
+    ->name('clients.update');
+Route::get('/clients/create', [ClientController::class, 'create'])
+    ->middleware('auth')
+    ->name('clients.create');
+Route::get('/clients/{id}', [ClientController::class, 'show'])
+    ->middleware('auth')
+    ->name('clients.show');
+Route::delete('/clients/{id}', [ClientController::class, 'destroy'])
+    ->middleware('auth')
+    ->name('clients.destroy');
+Route::get('/clients/{id}/edit', [ClientController::class, 'edit'])
+    ->middleware('auth')
+    ->name('clients.edit');
+Route::post('/clients/{id}/ban', [ClientController::class, 'ban'])
+    ->middleware('auth')
+    ->name('clients.ban');
+Route::post('/clients/{id}/unban', [ClientController::class, 'unban'])
+    ->middleware('auth')
+    ->name('clients.unban');
+    
+    

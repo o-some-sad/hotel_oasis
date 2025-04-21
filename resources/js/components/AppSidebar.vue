@@ -26,6 +26,12 @@ const mainNavItems: NavItem[] = [
         allowedRoles: ["admin", "manager", "receptionist"],
     },
     {
+        title: "Manage Clients",
+        href: "/clients",
+        icon: UsersRound,
+        allowedRoles: ["admin", "manager"],
+    },
+    {
         title: "Approved clients",
         href: "/approved-clients",
         icon: UsersRound,
