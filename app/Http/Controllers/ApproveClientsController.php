@@ -11,16 +11,17 @@ class ApproveClientsController extends Controller
     //
     public function approvedClients(Request $request)
     {
+        $page = $request->query("page",1);
         //! Assumption: Admin can always see all approved clients
         $role = $request->user()->role;
-        $users = User::where('role', 'client');
+        $pagination = User::where('role', 'client');
         if($role != 'admin') {
-            $users =  $users->where('approved_by', $request->user()->id);
+            $pagination =  $pagination->where('approved_by', $request->user()->id);
         }
-        $users = $users->get()->toArray();
+        $pagination = $pagination->paginate(10, ["*"], "page", $page);
 
         return Inertia::render("ApprovedClients/index", [
-            "data"=> $users
+            "pagination"=> $pagination
         ]);
     }
 }

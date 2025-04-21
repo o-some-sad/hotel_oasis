@@ -11,12 +11,14 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { FlexRender, getCoreRowModel, useVueTable } from '@tanstack/vue-table';
 import { ArrowUpDown, ChevronDown, Plus } from 'lucide-vue-next';
 import { h, ref } from 'vue';
-import { RowData } from '.';
+import { PaginationData, RowData } from '.';
+import { Link } from '@inertiajs/vue3';
 // import DropdownAction from './DataTableDemoColumn.vue'
 
 
 const props = defineProps<{
-    data: RowData[]
+    data: RowData[],
+    links: PaginationData['links']
 }>();
 
 
@@ -188,8 +190,9 @@ const table = useVueTable({
                 {{ table.getFilteredSelectedRowModel().rows.length }} of {{ table.getFilteredRowModel().rows.length }} row(s) selected.
             </div>
             <div class="space-x-2">
-                <Button variant="outline" size="sm" :disabled="!table.getCanPreviousPage()" @click="table.previousPage()"> Previous </Button>
-                <Button variant="outline" size="sm" :disabled="!table.getCanNextPage()" @click="table.nextPage()"> Next </Button>
+                <Link v-for="link in links" :key="link.label" :href="link.url ? link.url : '#'">
+                    <Button v-html="link.label" variant="outline" />
+                </Link>
             </div>
         </div>
     </div>

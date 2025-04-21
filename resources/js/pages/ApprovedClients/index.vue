@@ -4,7 +4,7 @@ import { } from '@/components/ui/table';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/vue3';
 import ApprovedClientsTable from './ApprovedClientsTable.vue';
-import { RowData } from '.';
+import { PaginationData, RowData } from '.';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -18,11 +18,10 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 const props = defineProps<{
-    data: RowData[];
+    pagination: PaginationData;
 }>();
 
-
-console.log(props.data);
+const data = props.pagination.data
 
 </script>
 
@@ -31,7 +30,7 @@ console.log(props.data);
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
-            <ApprovedClientsTable :data="data" />
+            <ApprovedClientsTable :links="pagination.links" :data="data" />
         </div>
     </AppLayout>
 </template>
