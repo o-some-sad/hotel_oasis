@@ -6,6 +6,7 @@ use Inertia\Inertia;
 use App\Http\Controllers\ManageReceptionistController;
 use App\Http\Controllers\ManagerController;
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\PendingApprovalController;
 
 
 
@@ -81,5 +82,9 @@ Route::post('/clients/{id}/ban', [ClientController::class, 'ban'])
 Route::post('/clients/{id}/unban', [ClientController::class, 'unban'])
     ->middleware('auth')
     ->name('clients.unban');
+
+Route::resource('pending-approvals', PendingApprovalController::class)->middleware('auth');
+
+    
     
     

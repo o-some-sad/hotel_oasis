@@ -4,13 +4,13 @@
     <Head title="Create Client" />
     <AppLayout :breadcrumbs="breadcrumbs">
       <div class="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
-        <div class="overflow-hidden bg-white shadow-sm rounded-xl">
-          <div class="p-6 text-gray-900">
+        <div class="overflow-hidden bg-white dark:bg-gray-900 shadow-sm rounded-xl">
+          <div class="p-6 text-gray-900 dark:text-gray-100">
             <div class="mb-6 flex justify-between">
-              <h3 class="text-lg font-medium">Client Details</h3>
+              <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">Client Details</h3>
               <Link
                 :href="route('clients.index')"
-                class="rounded-md bg-gray-200 px-4 py-2 text-sm font-medium text-gray-800 hover:bg-gray-300"
+                class="rounded-md bg-gray-200 dark:bg-gray-800 px-4 py-2 text-sm font-medium text-gray-800 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-700"
               >
                 Back to List
               </Link>

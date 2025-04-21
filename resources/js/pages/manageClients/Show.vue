@@ -165,7 +165,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
-import { type BreadcrumbItem } from '@/types'
 
 const props = defineProps({
   client: Object,

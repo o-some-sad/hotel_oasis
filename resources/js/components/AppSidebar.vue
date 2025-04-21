@@ -35,6 +35,11 @@ const mainNavItems: NavItem[] = [
         title: "Approved clients",
         href: "/approved-clients",
         icon: UsersRound,
+    },
+    {
+        title: "Pending Approval",
+        href: "/pending-approvals",
+        icon: PersonStanding,
     }
 ];
 

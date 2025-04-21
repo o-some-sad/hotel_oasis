@@ -18,9 +18,10 @@ class ClientController extends Controller
     public function index()
     {
         if(auth()->user()->role === 'admin' || auth()->user()->role === 'manager') {
-            $clients = User::where('role', 'client')->with('manager')->get();
+            $clients = User::where('role', 'client')->with('manager')->paginate(10);
             return Inertia::render('manageClients/Index', [
-                'clients' => $clients
+                'pagination' => $clients,
+                'clients' => $clients->items(),
             ]);
         }
         
