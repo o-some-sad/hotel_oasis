@@ -1,48 +1,53 @@
 <script setup lang="ts">
-import DataTable from '@/components/DataTable.vue';
-import { router, usePage } from '@inertiajs/vue3';
-import { computed } from 'vue';
+import { computed } from 'vue'
+import { usePage, router } from '@inertiajs/vue3'
+import DataTable from '@/components/DataTable.vue'
 
-const receptionists = computed(() => usePage().props.receptionists);
-const message = computed(() => usePage().props.message);
+const receptionists = computed(() => usePage().props.receptionists)
+const message = computed(() => usePage().props.message)
 
 const headers = computed(() => {
     if (receptionists.value.length > 0) {
         const baseKeys = Object.keys(receptionists.value[0]);
-        const requiredKeys = ['status', 'update', 'delete'];
 
-        requiredKeys.forEach((key) => {
-            if (!baseKeys.includes(key)) {
-                baseKeys.push(key);
-            }
-        });
+        const filteredKeys = baseKeys.filter(key => !['banned_at','id'].includes(key));
 
-        return baseKeys;
+        if (!filteredKeys.includes('action')) {
+            filteredKeys.push('action');
+        }
+
+        return filteredKeys;
     }
     return [];
-});
+})
 
 function handleBan(receptionist) {
-    if (confirm('Are you sure you want to ban this receptionist?')) {
-        router.post(route('receptionists.ban', receptionist.id));
-    }
+    router.patch(route('receptionists.update', { receptionist: receptionist.id }), {
+        banned_at: new Date().toISOString(),
+        _method: 'PATCH',
+    });
 }
 
 function handleUnban(receptionist) {
-    if (confirm('Are you sure you want to unban this receptionist?')) {
-        router.post(route('receptionists.unban', receptionist.id));
-    }
+    console.log("dddddddd");
+    router.patch(route('receptionists.update', { receptionist: receptionist.id }), {
+        banned_at: null,
+        _method: 'PATCH',
+    });
 }
 
 function handleDelete(receptionist) {
     if (confirm('Are you sure you want to delete this receptionist?')) {
-        router.delete(`/receptionists/${receptionist.id}`);
+        router.delete(route('receptionists.destroy', { receptionist: receptionist.id }));
     }
 }
 
 function handleUpdate(receptionist) {
-    router.get(route('receptionists.edit', receptionist.id));
+    console.log(receptionist.id);
+    router.get(route('receptionists.edit', { receptionist: receptionist.id }));
 }
+
+
 
 function handleAddNewUser() {
     router.get('/receptionists/create');
@@ -50,24 +55,28 @@ function handleAddNewUser() {
 </script>
 
 <template>
-    <div class="min-h-screen bg-gray-50 px-4 py-6">
-        <h1 class="mb-6 text-center text-3xl font-bold text-blue-600">Receptionists</h1>
+    <div class="bg-gray-50 min-h-screen py-6 px-4">
+        <h1 class="text-3xl font-bold text-center text-blue-600 mb-6">Receptionists</h1>
 
-        <div v-if="message" class="mb-4 text-center text-red-500">
+        <div v-if="message" class="text-red-500 text-center mb-4">
             {{ message }}
         </div>
 
-        <div class="mb-6 text-center">
-            <button @click="handleAddNewUser" class="rounded-lg bg-green-600 px-6 py-3 text-white transition duration-300 hover:bg-green-700">
+        <div class="text-center mb-6">
+            <button
+                @click="handleAddNewUser"
+                class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition duration-300"
+            >
                 Add New User
             </button>
         </div>
 
-        <div v-if="!message" class="overflow-x-auto rounded-lg shadow-md">
+        <div v-if="!message" class="overflow-x-auto shadow-md rounded-lg">
             <DataTable
                 :headers="headers"
                 :receptionists="receptionists"
-                @status="(receptionist) => (receptionist.status === 'Ban' ? handleBan(receptionist) : handleUnban(receptionist))"
+                @ban="handleBan"
+                @unban="handleUnban"
                 @delete="handleDelete"
                 @update="handleUpdate"
             />

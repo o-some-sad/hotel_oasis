@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Cog\Contracts\Ban\Bannable as BannableInterface;
 use Cog\Laravel\Ban\Traits\Bannable;
 
-class User extends Authenticatable implements BannableInterface
+    class User extends Authenticatable implements BannableInterface
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable, SoftDeletes, Bannable;
@@ -65,14 +65,14 @@ class User extends Authenticatable implements BannableInterface
      * Check if user is banned
      * This is an alias for the isBanned method from the Bannable trait
      * to make the code more readable and maintainable
-     * 
+     *
      * @return bool
      */
     public function isUserBanned(): bool
     {
         return $this->isBanned();
     }
-    
+
     public function manager()
     {
         return $this->belongsTo(User::class, 'created_by');
