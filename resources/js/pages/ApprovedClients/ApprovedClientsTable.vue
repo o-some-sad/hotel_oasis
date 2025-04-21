@@ -14,6 +14,7 @@ import { h, ref } from 'vue';
 import { PaginationData, RowData } from '.';
 import { Link, usePage } from '@inertiajs/vue3';
 import { SharedData, User } from '@/types';
+import ViewModal from './ViewModal.vue';
 // import DropdownAction from './DataTableDemoColumn.vue'
 
 
@@ -83,14 +84,9 @@ const columns: ColumnDef<RowData>[] = [
     {
         id: 'actions',
         enableHiding: false,
-        cell: ({ row }) => {
+        cell: ({ row }) => {            
             return h('h1', 
-                h(Button, {
-                    onClick: () => {
-                        
-                        
-                    }
-                }, "View")
+                h(ViewModal, { id: row.original.id })
 
 
             );
