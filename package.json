@@ -23,17 +23,15 @@
         "prettier-plugin-tailwindcss": "^0.6.11",
         "tailwindcss": "^4.1.4",
         "tw-animate-css": "^1.2.5",
+        "typescript": "^5.8.3",
         "typescript-eslint": "^8.23.0",
         "vue-tsc": "^2.2.4"
     },
     "dependencies": {
         "@inertiajs/inertia-vue3": "^0.6.0",
-<<<<<<< HEAD
-        "@inertiajs/vue3": "^2.0.0-beta.3",
-=======
         "@inertiajs/vue3": "^2.0.8",
->>>>>>> 21f3cff (feat: Implement and customize Laravel authentication with banned user check)
         "@tailwindcss/vite": "^4.1.1",
+        "@tanstack/vue-table": "^8.21.3",
         "@vitejs/plugin-vue": "^5.2.1",
         "@vueuse/core": "^12.8.2",
         "class-variance-authority": "^0.7.1",
@@ -45,9 +43,10 @@
         "reka-ui": "^2.2.0",
         "tailwind-merge": "^2.5.5",
         "tailwindcss-animate": "^1.0.7",
-        "typescript": "^5.2.2",
         "vite": "^6.2.0",
         "vue": "^3.5.13",
+        "vue-tsx-support": "^3.2.0",
+        "vue3-table": "^1.0.0",
         "ziggy-js": "^2.4.2"
     },
     "optionalDependencies": {
