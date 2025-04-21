@@ -28,4 +28,13 @@ Route::get('/managers', [ManagerController::class, 'index'])
     ->middleware('auth')
     ->name('managers.index');
 
-Route::resource( 'receptionists', ManageReceptionistController::class)->middleware('auth');
+Route::resource('receptionists', ManageReceptionistController::class)->middleware('auth');
+
+// Ban/unban routes for receptionists
+Route::post('receptionists/{id}/ban', [ManageReceptionistController::class, 'ban'])
+    ->middleware('auth')
+    ->name('receptionists.ban');
+
+Route::post('receptionists/{id}/unban', [ManageReceptionistController::class, 'unban'])
+    ->middleware('auth')
+    ->name('receptionists.unban');
