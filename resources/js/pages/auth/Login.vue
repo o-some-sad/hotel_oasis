@@ -27,12 +27,13 @@
                     >
                     <div v-if="form.errors.password" class="text-red-500 text-sm mt-1">{{ form.errors.password }}</div>
                 </div>
-                <button
+                <Button
                     type="submit"
-                    class="w-full bg-oasis-lightGreen text-white py-2 rounded-md hover:bg-oasis-softBlue hover:scale-105 transition-all duration-300"
+                    size="lg"
+                    class="w-full"
                 >
                     Log In
-                </button>
+            </Button>
             </form>
             <div class="mt-4 text-center">
                 <a href="/forgot-password" class="text-oasis-lightGreen hover:underline">Forgot your password?</a>
@@ -45,6 +46,7 @@
 import { defineComponent } from 'vue';
 import { useForm, usePage } from '@inertiajs/vue3';
 import { Head } from '@inertiajs/vue3';
+import Button from '@/components/ui/button/Button.vue';
 
 interface FormData {
     email: string;
@@ -52,9 +54,9 @@ interface FormData {
 }
 
 export default defineComponent({
-    components: { Head },
+    components: { Head, Button },
     setup() {
-        const form = useForm<FormData>({
+        const form = useForm({
             email: '',
             password: '',
         });
@@ -67,9 +69,8 @@ export default defineComponent({
 
         const { props } = usePage();
         const canResetPassword = route().has('password.request');
-        const status = props.value.status as string | undefined;
 
-        return { form, submit, canResetPassword, status };
+        return { form, submit, canResetPassword };
     },
 });
 </script>
