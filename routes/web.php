@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\ApproveClientsController;
+use App\Http\Controllers\ApprovedClientsController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\ManageReceptionistController;
@@ -17,7 +17,9 @@ Route::get('dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 
-Route::get('/approved-clients', [ApproveClientsController::class, 'approvedClients'])->middleware(['auth', 'verified'])->name('approved-clients');
+// Route::get('/approved-clients', [ApproveClientsController::class, 'approvedClients'])->middleware(['auth', 'verified'])->name('approved-clients');
+
+Route::resource("approved-clients", ApprovedClientsController::class);
 
 require __DIR__ . '/settings.php';
 require __DIR__ . '/auth.php';

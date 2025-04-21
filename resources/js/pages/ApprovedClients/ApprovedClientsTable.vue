@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { ColumnDef, ColumnFiltersState, ExpandedState, SortingState, VisibilityState } from '@tanstack/vue-table';
 // import { valueUpdater } from '@/utils'
-import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 // import DropdownAction from '@/components/DataTableDropDown.vue'
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -12,9 +11,10 @@ import { FlexRender, getCoreRowModel, useVueTable } from '@tanstack/vue-table';
 import { ArrowUpDown, ChevronDown, Plus } from 'lucide-vue-next';
 import { h, ref } from 'vue';
 import { PaginationData, RowData } from '.';
-import { Link, usePage } from '@inertiajs/vue3';
+import { Link, router, usePage } from '@inertiajs/vue3';
 import { SharedData, User } from '@/types';
 import ViewModal from './ViewModal.vue';
+import Button from '@/components/ui/button/Button.vue';
 // import DropdownAction from './DataTableDemoColumn.vue'
 
 
@@ -84,9 +84,15 @@ const columns: ColumnDef<RowData>[] = [
     {
         id: 'actions',
         enableHiding: false,
-        cell: ({ row }) => {            
-            return h('h1', 
-                h(ViewModal, { id: row.original.id })
+        cell: ({ row }) => {                        
+            return h('div', 
+                // h(ViewModal, { id: row.original.id }),
+                h(Button, { 
+                    
+                    onClick(){
+                        router.get(route('approved-clients.show', { id: row.original.id}))
+                    }
+                 }, "Details")
 
 
             );
