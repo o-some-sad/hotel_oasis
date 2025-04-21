@@ -16,6 +16,7 @@ export interface NavItem {
     href: string;
     icon?: LucideIcon;
     isActive?: boolean;
+    allowedRoles?: User['role'][];
 }
 
 export interface SharedData extends PageProps {

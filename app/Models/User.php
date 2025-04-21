@@ -7,12 +7,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Cog\Contracts\Ban\Bannable as BannableInterface;
+use Cog\Laravel\Ban\Traits\Bannable;
 
-
-class User extends Authenticatable
+class User extends Authenticatable implements BannableInterface
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, SoftDeletes, Bannable;
 
     /**
      * The attributes that are mass assignable.
@@ -23,6 +25,17 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'national_id',
+        'avatar_img' ,
+        'mobile',
+        'country' ,
+        'gender' ,
+        'is_approved',
+        'created_by',
+        'approved_by' ,
+        'banned_at' ,
+        'deleted_at',
+        'role',
     ];
 
     /**
@@ -47,6 +60,19 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    /**
+     * Check if user is banned
+     * This is an alias for the isBanned method from the Bannable trait
+     * to make the code more readable and maintainable
+     * 
+     * @return bool
+     */
+    public function isUserBanned(): bool
+    {
+        return $this->isBanned();
+    }
+    
     public function manager()
     {
         return $this->belongsTo(User::class, 'created_by');
