@@ -1,5 +1,5 @@
 <script setup>
-import { useForm } from '@inertiajs/vue3'
+import { useForm } from '@inertiajs/vue3';
 
 const form = useForm({
     name: '',
@@ -10,20 +10,20 @@ const form = useForm({
     gender: '',
     mobile: '',
     country: '',
-})
+});
 
 function submit() {
     form.post(route('receptionists.store'), {
         onSuccess: () => {
             window.location.href = '/receptionists';
-        }
+        },
     });
 }
 </script>
 
 <template>
-    <div class="max-w-xl mx-auto bg-white shadow-lg rounded-xl p-6 space-y-4">
-        <h2 class="text-2xl font-bold text-center text-blue-600">Add Receptionist</h2>
+    <div class="mx-auto max-w-xl space-y-4 rounded-xl bg-white p-6 shadow-lg">
+        <h2 class="text-center text-2xl font-bold text-blue-600">Add Receptionist</h2>
 
         <form @submit.prevent="submit" class="space-y-4" enctype="multipart/form-data">
             <!-- Name -->
@@ -32,10 +32,10 @@ function submit() {
                 <input
                     v-model="form.name"
                     type="text"
-                    class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    class="w-full rounded-lg border px-4 py-2 text-blue-950 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                     name="name"
                 />
-                <span v-if="form.errors.name" class="text-red-500 text-sm">{{ form.errors.name }}</span>
+                <span v-if="form.errors.name" class="text-sm text-red-500">{{ form.errors.name }}</span>
             </div>
 
             <!-- Email -->
@@ -45,10 +45,10 @@ function submit() {
                     autocomplete="off"
                     v-model="form.email"
                     type="email"
-                    class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    class="w-full rounded-lg border px-4 py-2 text-blue-950 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                     name="email"
                 />
-                <span v-if="form.errors.email" class="text-red-500 text-sm">{{ form.errors.email }}</span>
+                <span v-if="form.errors.email" class="text-sm text-red-500">{{ form.errors.email }}</span>
             </div>
 
             <!-- Password -->
@@ -58,10 +58,10 @@ function submit() {
                     autocomplete="new-password"
                     v-model="form.password"
                     type="password"
-                    class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    class="w-full rounded-lg border px-4 py-2 text-blue-950 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                     name="password"
                 />
-                <span v-if="form.errors.password" class="text-red-500 text-sm">{{ form.errors.password }}</span>
+                <span v-if="form.errors.password" class="text-sm text-red-500">{{ form.errors.password }}</span>
             </div>
 
             <!-- National ID -->
@@ -70,10 +70,10 @@ function submit() {
                 <input
                     v-model="form.national_id"
                     type="text"
-                    class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    class="w-full rounded-lg border px-4 py-2 text-blue-950 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                     name="national_id"
                 />
-                <span v-if="form.errors.national_id" class="text-red-500 text-sm">{{ form.errors.national_id }}</span>
+                <span v-if="form.errors.national_id" class="text-sm text-red-500">{{ form.errors.national_id }}</span>
             </div>
 
             <!-- Gender -->
@@ -81,14 +81,14 @@ function submit() {
                 <label class="block text-gray-700">Gender</label>
                 <select
                     v-model="form.gender"
-                    class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    class="w-full rounded-lg border px-4 py-2 text-blue-950 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                     name="gender"
                 >
                     <option disabled value="">Select Gender</option>
                     <option value="male">Male</option>
                     <option value="female">Female</option>
                 </select>
-                <span v-if="form.errors.gender" class="text-red-500 text-sm">{{ form.errors.gender }}</span>
+                <span v-if="form.errors.gender" class="text-sm text-red-500">{{ form.errors.gender }}</span>
             </div>
 
             <!-- Mobile -->
@@ -97,10 +97,10 @@ function submit() {
                 <input
                     v-model="form.mobile"
                     type="text"
-                    class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    class="w-full rounded-lg border px-4 py-2 text-blue-950 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                     name="mobile"
                 />
-                <span v-if="form.errors.mobile" class="text-red-500 text-sm">{{ form.errors.mobile }}</span>
+                <span v-if="form.errors.mobile" class="text-sm text-red-500">{{ form.errors.mobile }}</span>
             </div>
 
             <!-- Country -->
@@ -109,10 +109,10 @@ function submit() {
                 <input
                     v-model="form.country"
                     type="text"
-                    class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    class="w-full rounded-lg border px-4 py-2 text-blue-950 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                     name="country"
                 />
-                <span v-if="form.errors.country" class="text-red-500 text-sm">{{ form.errors.country }}</span>
+                <span v-if="form.errors.country" class="text-sm text-red-500">{{ form.errors.country }}</span>
             </div>
 
             <!-- Profile Image -->
@@ -120,17 +120,17 @@ function submit() {
                 <label class="block text-gray-700">Profile Image</label>
                 <input
                     type="file"
-                    @change="e => form.avatar_img = e.target.files[0]"
-                    class="w-full px-4 py-2 border rounded-lg focus:outline-none"
+                    @change="(e) => (form.avatar_img = e.target.files[0])"
+                    class="w-full rounded-lg border px-4 py-2 text-blue-950 focus:outline-none"
                     name="avatar_img"
                 />
-                <span v-if="form.errors.avatar_img" class="text-red-500 text-sm">{{ form.errors.avatar_img }}</span>
+                <span v-if="form.errors.avatar_img" class="text-sm text-red-500">{{ form.errors.avatar_img }}</span>
             </div>
 
             <div class="text-center">
                 <button
                     type="submit"
-                    class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition duration-300"
+                    class="rounded-lg bg-blue-600 px-6 py-2 text-white transition duration-300 hover:bg-blue-700"
                     :disabled="form.processing"
                 >
                     Submit
