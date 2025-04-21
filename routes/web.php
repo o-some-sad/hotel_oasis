@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ApproveClientsController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\ManageReceptionistController;
@@ -15,10 +16,11 @@ Route::get('dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-Route:
 
-require __DIR__.'/settings.php';
-require __DIR__.'/auth.php';
+Route::get('/approved-clients', [ApproveClientsController::class, 'approvedClients'])->middleware(['auth', 'verified'])->name('approved-clients');
+
+require __DIR__ . '/settings.php';
+require __DIR__ . '/auth.php';
 
 
 //Route::middleware(['auth'])->group(function() {
