@@ -5,22 +5,6 @@ use Inertia\Inertia;
 use App\Http\Controllers\ManageReceptionistController;
 use App\Http\Middleware\EnsureUserHasRole;
 
-Route::get('/admin', function () {
-    // ...
-})->middleware([EnsureUserHasRole::class, 'ensureUserHasRole:admin']);
-
-Route::get('/manager', function () {
-    // ...
-})->middleware([EnsureUserHasRole::class, 'ensureUserHasRole:manager']);
-
-Route::get('/receptionist', function () {
-    // ...
-})->middleware([EnsureUserHasRole::class, 'ensureUserHasRole:receptionist']);
-
-Route::get('/client', function () {
-    // ...
-})->middleware([EnsureUserHasRole::class, 'ensureUserHasRole:client']);
-
 
 Route::get('/', function () {
     return Inertia::render('Welcome');
@@ -28,7 +12,7 @@ Route::get('/', function () {
 
 Route::get('dashboard', function () {
     return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+})->middleware(['auth', 'verified', EnsureUserHasRole::class . ':admin,manager,receptionist'])->name('dashboard');
 
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';

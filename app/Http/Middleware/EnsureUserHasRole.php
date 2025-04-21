@@ -13,12 +13,13 @@ class EnsureUserHasRole
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle(Request $request, Closure $next, string $role): Response
-    {
-        if (! $request->user() || ! $request->user()->hasRole($role)) {
-            return redirect('/'); // Or abort(403);
-        }
+    public function handle(Request $request, Closure $next, string ...$roles): Response
+    {  
 
-        return $next($request);
+        $currentRole = auth()->user()->role;
+        if(in_array($currentRole, $roles)){
+            return $next($request);
+        }
+        abort(403, "You don't have permission to access this page");
     }
 }
