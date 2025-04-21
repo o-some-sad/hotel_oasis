@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\ManageReceptionistController;
 use App\Http\Controllers\ManagerController;
+use App\Http\Controllers\ManageRoomController;
 
 
 
@@ -23,20 +24,10 @@ require __DIR__ . '/settings.php';
 require __DIR__ . '/auth.php';
 
 
-//Route::middleware(['auth'])->group(function() {
-//    Route::resource('receptionists', ManageReceptionistController::class);
-//});
 Route::get('/managers', [ManagerController::class, 'index'])
     ->middleware('auth')
     ->name('managers.index');
 
-Route::resource('receptionists', ManageReceptionistController::class)->middleware('auth');
+Route::resource( 'receptionists', ManageReceptionistController::class)->middleware('auth');
+Route::resource( 'rooms', ManageRoomController::class)->middleware('auth');
 
-// Ban/unban routes for receptionists
-Route::post('receptionists/{id}/ban', [ManageReceptionistController::class, 'ban'])
-    ->middleware('auth')
-    ->name('receptionists.ban');
-
-Route::post('receptionists/{id}/unban', [ManageReceptionistController::class, 'unban'])
-    ->middleware('auth')
-    ->name('receptionists.unban');

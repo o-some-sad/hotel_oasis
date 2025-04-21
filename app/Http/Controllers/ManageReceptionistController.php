@@ -1,15 +1,13 @@
 <?php
 
 namespace App\Http\Controllers;
-use Inertia\Inertia;
-use App\Models\User;
-use Illuminate\Http\Request;
-use App\Http\Resources\ReceptionistResource;
 use App\Http\Requests\StoreReceiptionistRequest;
 use App\Http\Requests\UpdateReceptionistRequest;
-use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Http\Resources\Resources\ReceptionistResource;
+use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Inertia\Inertia;
 
 class ManageReceptionistController extends Controller
 {
@@ -131,13 +129,11 @@ class ManageReceptionistController extends Controller
     public function ban($id)
     {
         $receptionist = User::findOrFail($id);
-        
-        // Check if user is authorized to ban this receptionist
+
         if (auth()->user()->role !== 'admin' && auth()->id() !== $receptionist->created_by) {
             return redirect()->back()->with('error', 'You are not authorized to ban this receptionist.');
         }
 
-        // Ban the receptionist with a comment
         $receptionist->ban([
             'comment' => 'Banned by ' . auth()->user()->name,
             'created_by_id' => auth()->id(),
@@ -149,13 +145,11 @@ class ManageReceptionistController extends Controller
     public function unban($id)
     {
         $receptionist = User::findOrFail($id);
-        
-        // Check if user is authorized to unban this receptionist
+
         if (auth()->user()->role !== 'admin' && auth()->id() !== $receptionist->created_by) {
             return redirect()->back()->with('error', 'You are not authorized to unban this receptionist.');
         }
 
-        // Unban the receptionist
         $receptionist->unban();
 
         return redirect()->route('receptionists.index')->with('message', 'Receptionist unbanned successfully.');
