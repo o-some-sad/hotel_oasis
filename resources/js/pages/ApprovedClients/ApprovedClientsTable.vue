@@ -12,7 +12,8 @@ import { FlexRender, getCoreRowModel, useVueTable } from '@tanstack/vue-table';
 import { ArrowUpDown, ChevronDown, Plus } from 'lucide-vue-next';
 import { h, ref } from 'vue';
 import { PaginationData, RowData } from '.';
-import { Link } from '@inertiajs/vue3';
+import { Link, usePage } from '@inertiajs/vue3';
+import { SharedData, User } from '@/types';
 // import DropdownAction from './DataTableDemoColumn.vue'
 
 
@@ -21,7 +22,8 @@ const props = defineProps<{
     links: PaginationData['links']
 }>();
 
-
+const page = usePage<SharedData>();
+const user = page.props.auth.user as User;
 const columns: ColumnDef<RowData>[] = [
     {
         id: 'select',
@@ -41,9 +43,9 @@ const columns: ColumnDef<RowData>[] = [
         enableHiding: false,
     },
     {
-        accessorKey: 'status',
-        header: 'Status',
-        cell: ({ row }) => h('div', { class: 'capitalize' }, row.getValue('status')),
+        accessorKey: 'name',
+        header: 'Name',
+        cell: ({ row }) => h('div', { class: 'capitalize' }, row.getValue('name')),
     },
     {
         accessorKey: 'email',
@@ -60,18 +62,22 @@ const columns: ColumnDef<RowData>[] = [
         cell: ({ row }) => h('div', { class: 'lowercase' }, row.getValue('email')),
     },
     {
-        accessorKey: 'amount',
-        header: () => h('div', { class: 'text-right' }, 'Amount'),
+        accessorKey: 'mobile',
+        header: 'Mobile',
+        cell: ({ row }) => h('div', { class: 'capitalize' }, row.getValue('mobile')),
+    },
+    {
+        accessorKey: 'country',
+        header: () => h('div', {}, 'Country'),
         cell: ({ row }) => {
-            const amount = Number.parseFloat(row.getValue('amount'));
-
-            // Format the amount as a dollar amount
-            const formatted = new Intl.NumberFormat('en-US', {
-                style: 'currency',
-                currency: 'USD',
-            }).format(amount);
-
-            return h('div', { class: 'text-right font-medium' }, formatted);
+            return h('div', row.getValue('country'));
+        },
+    },
+    {
+        accessorKey: 'gender',
+        header: ()=> h('div', { class: 'text-right' }, 'Gender'),
+        cell: ({ row }) => {
+            return h('div', { class: 'text-right' }, row.getValue('gender'));
         },
     },
     {
@@ -80,10 +86,10 @@ const columns: ColumnDef<RowData>[] = [
         cell: ({ row }) => {
             const payment = row.original;
 
-            return h('div', {
+            return h('h1', {
                 payment,
                 onExpand: row.toggleExpanded,
-            });
+            }, "h");
         },
     },
 ];
