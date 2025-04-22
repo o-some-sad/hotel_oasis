@@ -36,6 +36,7 @@ use Cog\Laravel\Ban\Traits\Bannable;
         'banned_at' ,
         'deleted_at',
         'role',
+        'last_login_in',
     ];
 
     /**
