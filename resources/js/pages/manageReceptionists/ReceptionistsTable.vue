@@ -1,23 +1,35 @@
 <script setup lang="ts">
-import type { ColumnDef } from '@tanstack/vue-table'
-import { Button } from '@/components/ui/button'
-import { Checkbox } from '@/components/ui/checkbox'
-import { Input } from '@/components/ui/input'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { FlexRender, getCoreRowModel, useVueTable } from '@tanstack/vue-table'
-import { ArrowUpDown, Plus } from 'lucide-vue-next'
-import { h, ref } from 'vue'
-import { Link, router, usePage } from '@inertiajs/vue3'
-import { SharedData } from '@/types'
-import type { Receptionist } from '@/types'
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import type { Receptionist } from '@/types';
+import { SharedData } from '@/types';
+import { Link, router, usePage } from '@inertiajs/vue3';
+import type { ColumnDef } from '@tanstack/vue-table';
+import { FlexRender, getCoreRowModel, useVueTable } from '@tanstack/vue-table';
+import { ArrowUpDown, Plus } from 'lucide-vue-next';
+import { h, ref, watch } from 'vue';
 
 const props = defineProps<{
-    data: Receptionist[],
-    links: any[]
-}>()
+    data: Receptionist[];
+    links: any[];
+}>();
 
-const page = usePage<SharedData>()
-const user = page.props.auth.user
+// Create a reactive local copy of the data
+const receptionists = ref<Receptionist[]>([...props.data]);
+
+// Watch for changes to props.data and update the local copy
+watch(
+    () => props.data,
+    (newData) => {
+        receptionists.value = [...newData];
+    },
+    { deep: true },
+);
+
+const page = usePage<SharedData>();
+const user = page.props.auth.user;
 const columns: ColumnDef<Receptionist>[] = [
     {
         id: 'select',
@@ -42,27 +54,29 @@ const columns: ColumnDef<Receptionist>[] = [
     {
         accessorKey: 'email',
         header: ({ column }) =>
-            h(Button, {
-                variant: 'ghost',
-                onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
-            }, () => ['Email', h(ArrowUpDown, { class: 'ml-2 h-4 w-4' })]),
+            h(
+                Button,
+                {
+                    variant: 'ghost',
+                    onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
+                },
+                () => ['Email', h(ArrowUpDown, { class: 'ml-2 h-4 w-4' })],
+            ),
         cell: ({ row }) => h('div', row.getValue('email')),
     },
 
     {
         accessorKey: 'created_by',
         header: 'Creator',
-        cell: ({row}) => {
+        cell: ({ row }) => {
             const creatorId = row.getValue('created_by');
 
             if (creatorId) {
                 return ` ${creatorId}`;
-
             }
 
             return '';
-        }
-
+        },
     },
 
     {
@@ -73,73 +87,110 @@ const columns: ColumnDef<Receptionist>[] = [
             const isActionEnabled = receptionist.action;
 
             return h('div', { class: 'flex gap-2' }, [
-                h(Button, {
-                    variant: 'outline',
-                    onClick: () => {
-                        if (isActionEnabled) {
-                            receptionist.banned_at
-                                ? handleUnban(receptionist)
-                                : handleBan(receptionist);
-                        }
+                h(
+                    Button,
+                    {
+                        variant: 'outline',
+                        onClick: () => {
+                            if (isActionEnabled) {
+                                receptionist.banned_at ? handleUnban(receptionist) : handleBan(receptionist);
+                            }
+                        },
+                        disabled: !isActionEnabled, // إذا كانت قيمة action هي false، يتم تعطيل الزر
                     },
-                    disabled: !isActionEnabled  // إذا كانت قيمة action هي false، يتم تعطيل الزر
-                }, receptionist.banned_at ? 'Unban' : 'Ban'),
+                    receptionist.banned_at ? 'Unban' : 'Ban',
+                ),
 
-                h(Button, {
-                    variant: 'outline',
-                    onClick: () => {
-                        if (isActionEnabled) {
-                            handleUpdate(receptionist);
-                        }
+                h(
+                    Button,
+                    {
+                        variant: 'outline',
+                        onClick: () => {
+                            if (isActionEnabled) {
+                                handleUpdate(receptionist);
+                            }
+                        },
+                        disabled: !isActionEnabled, // إذا كانت قيمة action هي false، يتم تعطيل الزر
                     },
-                    disabled: !isActionEnabled  // إذا كانت قيمة action هي false، يتم تعطيل الزر
-                }, 'Edit'),
+                    'Edit',
+                ),
 
-                h(Button, {
-                    variant: 'destructive',
-                    onClick: () => {
-                        if (isActionEnabled) {
-                            handleDelete(receptionist);
-                        }
+                h(
+                    Button,
+                    {
+                        variant: 'destructive',
+                        onClick: () => {
+                            if (isActionEnabled) {
+                                handleDelete(receptionist);
+                            }
+                        },
+                        disabled: !isActionEnabled, // إذا كانت قيمة action هي false، يتم تعطيل الزر
                     },
-                    disabled: !isActionEnabled  // إذا كانت قيمة action هي false، يتم تعطيل الزر
-                }, 'Delete'),
+                    'Delete',
+                ),
             ]);
-        }
-    }
-
-]
+        },
+    },
+];
 
 function handleBan(receptionist: Receptionist) {
-    router.patch(route('receptionists.update', { receptionist: receptionist.id }), {
-        banned_at: new Date().toISOString(),
-        _method: 'PATCH',
-    })
+    router.patch(
+        route('receptionists.update', { receptionist: receptionist.id }),
+        {
+            banned_at: new Date().toISOString(),
+            _method: 'PATCH',
+        },
+        {
+            preserveState: true,
+            onSuccess: () => {
+                // Update the local state immediately
+                receptionist.banned_at = new Date().toISOString();
+            },
+        },
+    );
 }
 
 function handleUnban(receptionist: Receptionist) {
-    router.patch(route('receptionists.update', { receptionist: receptionist.id }), {
-        banned_at: null,
-        _method: 'PATCH',
-    })
+    router.patch(
+        route('receptionists.update', { receptionist: receptionist.id }),
+        {
+            banned_at: null,
+            _method: 'PATCH',
+        },
+        {
+            preserveState: true,
+            onSuccess: () => {
+                // Update the local state immediately
+                receptionist.banned_at = null;
+            },
+        },
+    );
 }
 
 function handleDelete(receptionist: Receptionist) {
     if (confirm('Are you sure you want to delete this receptionist?')) {
-        router.delete(route('receptionists.destroy', { receptionist: receptionist.id }))
+        router.delete(route('receptionists.destroy', { receptionist: receptionist.id }), {
+            preserveState: true,
+            onSuccess: () => {
+                // Remove the deleted receptionist from our reactive data array
+                receptionists.value = receptionists.value.filter((r) => r.id !== receptionist.id);
+            },
+        });
     }
 }
 
 function handleUpdate(receptionist: Receptionist) {
-    router.get(route('receptionists.edit', { receptionist: receptionist.id }))
+    router.get(route('receptionists.edit', { receptionist: receptionist.id }));
 }
 
 const table = useVueTable({
-    data: props.data,
+    get data() {
+        return receptionists.value;
+    },
     columns,
     getCoreRowModel: getCoreRowModel(),
-    manualPagination: true
-})
+    manualPagination: true,
+});
 </script>
 
 <template>
@@ -154,7 +205,7 @@ const table = useVueTable({
 
             <Link :href="route('receptionists.create')">
                 <Button class="flex items-center gap-2">
-                    <Plus class="w-4 h-4" />
+                    <Plus class="h-4 w-4" />
                     Add Receptionist
                 </Button>
             </Link>
@@ -182,7 +233,7 @@ const table = useVueTable({
             </Table>
         </div>
 
-        <div class="flex justify-end py-4 space-x-2">
+        <div class="flex justify-end space-x-2 py-4">
             <Link v-for="link in links" :key="link.label" :href="link.url || '#'">
                 <Button v-html="link.label" variant="outline" />
             </Link>
