@@ -1,9 +1,14 @@
 <?php
 
+use App\Http\Controllers\ApproveClientsController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\ManageReceptionistController;
-use App\Http\Middleware\EnsureUserHasRole;
+use App\Http\Controllers\ManagerController;
+use App\Http\Controllers\ClientController;
+use App\Http\Controllers\PendingApprovalController;
+use App\Http\Controllers\ManageRoomController;
+
 
 
 Route::get('/', function () {
@@ -12,14 +17,75 @@ Route::get('/', function () {
 
 Route::get('dashboard', function () {
     return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified', EnsureUserHasRole::class . ':admin,manager,receptionist'])->name('dashboard');
-
-require __DIR__.'/settings.php';
-require __DIR__.'/auth.php';
+})->middleware(['auth', 'verified'])->name('dashboard');
 
 
-//Route::middleware(['auth'])->group(function() {
-//    Route::resource('receptionists', ManageReceptionistController::class);
-//});
+Route::get('/approved-clients', [ApproveClientsController::class, 'approvedClients'])->middleware(['auth', 'verified'])->name('approved-clients');
 
-Route::resource( 'receptionists', ManageReceptionistController::class)->middleware(['auth', 'can:manage-receptionists']);
+require __DIR__ . '/settings.php';
+require __DIR__ . '/auth.php';
+
+
+Route::get('/managers', [ManagerController::class, 'index'])
+    ->middleware('auth')
+    ->name('managers.index');
+
+Route::resource('receptionists', ManageReceptionistController::class)->middleware('auth');
+
+// Ban/unban routes for receptionists
+Route::post('receptionists/{id}/ban', [ManageReceptionistController::class, 'ban'])
+    ->middleware('auth')
+    ->name('receptionists.ban');
+
+Route::post('receptionists/{id}/unban', [ManageReceptionistController::class, 'unban'])
+    ->middleware('auth')
+    ->name('receptionists.unban');
+
+// Client management routes
+// Route::resource('clients', ClientController::class)->middleware('auth');
+
+// Ban/unban routes for clients
+Route::post('clients/{id}/ban', [ClientController::class, 'ban'])
+    ->middleware('auth')
+    ->name('clients.ban');
+
+Route::post('clients/{id}/unban', [ClientController::class, 'unban'])
+    ->middleware('auth')
+    ->name('clients.unban');
+
+Route::get('/clients', [ClientController::class, 'index'])
+    ->middleware('auth')
+    ->name('clients.index');
+Route::post('/clients', [ClientController::class, 'store'])
+    ->middleware('auth')
+    ->name('clients.store');
+Route::put('/clients/{id}', [ClientController::class, 'update'])
+    ->middleware('auth')
+    ->name('clients.update');
+Route::get('/clients/create', [ClientController::class, 'create'])
+    ->middleware('auth')
+    ->name('clients.create');
+Route::get('/clients/{id}', [ClientController::class, 'show'])
+    ->middleware('auth')
+    ->name('clients.show');
+Route::delete('/clients/{id}', [ClientController::class, 'destroy'])
+    ->middleware('auth')
+    ->name('clients.destroy');
+Route::get('/clients/{id}/edit', [ClientController::class, 'edit'])
+    ->middleware('auth')
+    ->name('clients.edit');
+Route::post('/clients/{id}/ban', [ClientController::class, 'ban'])
+    ->middleware('auth')
+    ->name('clients.ban');
+Route::post('/clients/{id}/unban', [ClientController::class, 'unban'])
+    ->middleware('auth')
+    ->name('clients.unban');
+
+Route::resource('pending-approvals', PendingApprovalController::class)->middleware('auth');
+
+    
+    
+    
+Route::resource( 'receptionists', ManageReceptionistController::class)->middleware('auth');
+Route::resource( 'rooms', ManageRoomController::class)->middleware('auth');
+

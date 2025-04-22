@@ -1,3 +1,4 @@
+<!-- DataTable.vue -->
 <script setup lang="ts">
 import { defineProps, defineEmits } from 'vue'
 
@@ -10,8 +11,8 @@ const emit = defineEmits(['ban', 'unban', 'delete', 'update'])
 
 defineProps<DataTableProps>()
 
-function handleAction(action: string, receptionist: Record<string, any>) {
-    emit(action.toLowerCase(), receptionist)
+function handleAction(action: 'ban' | 'unban' | 'delete' | 'update', receptionist: Record<string, any>) {
+    emit(action, receptionist)
 }
 </script>
 
@@ -40,14 +41,45 @@ function handleAction(action: string, receptionist: Record<string, any>) {
                     :key="header"
                     class="border px-6 py-4 text-sm text-gray-700"
                 >
-                    <template v-if="['status', 'update', 'delete'].includes(header)">
-                        <button
-                            v-if="receptionist[header]"
-                            @click="handleAction(header, receptionist)"
-                            class="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-700 mx-1 text-xs"
-                        >
-                            {{ receptionist[header] }}
-                        </button>
+                    <template v-if="header === 'action'">
+                        <div class="flex flex-wrap gap-2">
+                            <button
+                                @click="handleAction(receptionist.banned_at ? 'unban' : 'ban', receptionist)"
+                                :disabled="!receptionist.action"
+                                :class="[
+                                        'px-3 py-1 rounded text-xs transition',
+                                        receptionist.action
+                                            ? 'bg-yellow-500 text-white hover:bg-yellow-600'
+                                            : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                    ]"
+                            >
+                                {{ receptionist.banned_at ? 'Unban' : 'Ban' }}
+                            </button>
+                            <button
+                                @click="handleAction('update', receptionist)"
+                                :disabled="!receptionist.action"
+                                :class="[
+                                        'px-3 py-1 rounded text-xs transition',
+                                        receptionist.action
+                                            ? 'bg-blue-500 text-white hover:bg-blue-600'
+                                            : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                    ]"
+                            >
+                                Update
+                            </button>
+                            <button
+                                @click="handleAction('delete', receptionist)"
+                                :disabled="!receptionist.action"
+                                :class="[
+                                        'px-3 py-1 rounded text-xs transition',
+                                        receptionist.action
+                                            ? 'bg-red-600 text-white hover:bg-red-700'
+                                            : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                    ]"
+                            >
+                                Delete
+                            </button>
+                        </div>
                     </template>
                     <template v-else>
                         {{ receptionist[header] ?? '-' }}

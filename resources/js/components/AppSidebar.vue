@@ -3,10 +3,15 @@ import NavFooter from '@/components/NavFooter.vue';
 import NavMain from '@/components/NavMain.vue';
 import NavUser from '@/components/NavUser.vue';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
-import { type NavItem } from '@/types';
-import { Link } from '@inertiajs/vue3';
-import { BookOpen, Folder, LayoutGrid } from 'lucide-vue-next';
+import { SharedData, User, type NavItem } from '@/types';
+import { Link, usePage } from '@inertiajs/vue3';
+import { BookOpen, Folder, LayoutGrid, PersonStanding, SquareUserRound, UsersRound } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
+
+
+
+const page = usePage<SharedData>();
+const user = page.props.auth.user as User;
 
 const mainNavItems: NavItem[] = [
     {
@@ -14,6 +19,28 @@ const mainNavItems: NavItem[] = [
         href: '/dashboard',
         icon: LayoutGrid,
     },
+    {
+        title: "Receptionists",
+        href: "/receptionists",
+        icon: SquareUserRound,
+        allowedRoles: ["admin", "manager", "receptionist"],
+    },
+    {
+        title: "Manage Clients",
+        href: "/clients",
+        icon: UsersRound,
+        allowedRoles: ["admin", "manager"],
+    },
+    {
+        title: "Approved clients",
+        href: "/approved-clients",
+        icon: UsersRound,
+    },
+    {
+        title: "Pending Approval",
+        href: "/pending-approvals",
+        icon: PersonStanding,
+    }
 ];
 
 const footerNavItems: NavItem[] = [
@@ -43,7 +70,6 @@ const footerNavItems: NavItem[] = [
                 </SidebarMenuItem>
             </SidebarMenu>
         </SidebarHeader>
-
         <SidebarContent>
             <NavMain :items="mainNavItems" />
         </SidebarContent>

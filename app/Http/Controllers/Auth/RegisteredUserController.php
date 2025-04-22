@@ -30,16 +30,33 @@ class RegisteredUserController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        $request->validate([
+        $validate= $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'password' => ['required', 'confirmed', 'min:8'],
+            'email' => 'required|string|email|lowercase|max:255|unique:users',
+            'national_id' => 'required|string|max:255|unique:users',
+            'mobile' => 'required|string|max:255',
+            'country' => 'required|string|max:255',
+            'gender' => 'required|string|in:male,female',
+            'avatar_img' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
+        if ($request->hasFile('avatar_img')) {
+            $path = $request->file('avatar_img')->store('receptionists', 'public');
+            $validate['avatar_img'] = $path;
+        }
 
         $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
+            'name' => $validate['name'],
+            'email' => $validate['email'],
+            'password' => Hash::make($validate['password']),
+            'national_id'=>$validate['national_id'],
+            'mobile'=>$validate['mobile'],
+            'country'=>$validate['country'],
+            'gender'=>$validate['gender'],
+            'avatar_img'=>$validate['avatar_img'],
+            'role'=>'client',
+            'is_approved'=>false,
+            'last_login_in'=>now(),
         ]);
 
         event(new Registered($user));
