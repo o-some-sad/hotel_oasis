@@ -33,6 +33,14 @@ const page = usePage<SharedData>();
                     </Link>
                 </SidebarMenuButton>
             </SidebarMenuItem>
+            <SidebarMenuItem>
+                <SidebarMenuButton as-child>
+                    <Link :href="'rooms'">
+                        <rect x="10" y="10" width="50" height="50" fill="transparent" stroke="blue" />
+                        <text x="20" y="40" fill="blue">Manage Rooms</text>
+                    </Link>
+                </SidebarMenuButton>
+            </SidebarMenuItem>
         </SidebarMenu>
     </SidebarGroup>
 </template>

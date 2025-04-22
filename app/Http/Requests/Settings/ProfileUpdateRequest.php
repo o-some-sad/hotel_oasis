@@ -15,16 +15,21 @@ class ProfileUpdateRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
+        $rules = [
             'name' => ['required', 'string', 'max:255'],
-            'email' => [
+            'avatar' => ['nullable', 'image', 'max:2048'],
+        ];
+        //! Assumption: admin can't change their email
+        if($this->user()->role != 'admin') {
+            $rules['email'] =  [
                 'required',
                 'string',
                 'lowercase',
                 'email',
                 'max:255',
                 Rule::unique(User::class)->ignore($this->user()->id),
-            ],
-        ];
+            ];
+        }
+        return $rules;
     }
 }

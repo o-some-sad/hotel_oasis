@@ -2,31 +2,35 @@
 import AppLayout from '@/layouts/AppLayout.vue';
 import { } from '@/components/ui/table';
 import { type BreadcrumbItem } from '@/types';
-import {Head, router} from '@inertiajs/vue3';
-import ReceptionistsTable from './ReceptionistsTable.vue';
+import { Head } from '@inertiajs/vue3';
+import ApprovedClientsTable from './ApprovedClientsTable.vue';
 import { PaginationData, RowData } from '.';
+
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Dashboard',
         href: '/dashboard',
     },
     {
-        title: "Receptionist",
-        href: "/receptionists",
+        title: "Approved clients",
+        href: "/approved-clients",
     },
 ];
 
 const props = defineProps<{
     pagination: PaginationData;
 }>();
-const data = props.pagination.data;
+
+const data = props.pagination.data
 
 </script>
+
 <template>
-    <Head title="Receptionist" />
+    <Head title="Approved clients" />
+
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
-            <ReceptionistsTable :data="data" ::links="props.pagination.links" />
+            <ApprovedClientsTable :links="pagination.links" :data="data" />
         </div>
     </AppLayout>
 </template>
