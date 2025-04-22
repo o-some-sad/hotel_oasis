@@ -24,7 +24,7 @@ class SendLoginReminderEmails extends Command
 
 
         foreach ($users as $user) {
-            SendLoginReminderEmail::dispatch($user);
+             SendLoginReminderEmail::dispatch($user);
         }
 
         $this->info('Login reminders sent to ' . $users->count() . ' users.');
