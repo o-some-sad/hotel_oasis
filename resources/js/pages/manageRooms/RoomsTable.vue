@@ -1,0 +1,190 @@
+<script setup lang="ts">
+import type { ColumnDef, ColumnFiltersState, ExpandedState, SortingState, VisibilityState } from '@tanstack/vue-table';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Input } from '@/components/ui/input';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { FlexRender, getCoreRowModel, useVueTable } from '@tanstack/vue-table';
+import { ArrowUpDown, ChevronDown, Plus } from 'lucide-vue-next';
+import { h, ref } from 'vue';
+import { PaginationData, RowData } from '.';
+import { Link, usePage } from '@inertiajs/vue3';
+import { SharedData, User } from '@/types';
+
+const props = defineProps<{
+    data: RowData[],
+    links: PaginationData['links']
+}>();
+
+const page = usePage<SharedData>();
+const user = page.props.auth.user as User;
+
+const columns: ColumnDef<RowData>[] = [
+    {
+        id: 'select',
+        header: ({ table }) =>
+            h(Checkbox, {
+                modelValue: table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && 'indeterminate'),
+                'onUpdate:modelValue': (value) => table.toggleAllPageRowsSelected(!!value),
+                ariaLabel: 'Select all',
+            }),
+        cell: ({ row }) =>
+            h(Checkbox, {
+                modelValue: row.getIsSelected(),
+                'onUpdate:modelValue': (value) => row.toggleSelected(!!value),
+                ariaLabel: 'Select row',
+            }),
+        enableSorting: false,
+        enableHiding: false,
+    },
+    {
+        accessorKey: 'number',
+        header: 'Number',
+        cell: ({ row }) => h('div', { class: 'capitalize' }, row.getValue('number')),
+    },
+    {
+        accessorKey: 'capacity',
+        header: ({ column }) =>
+            h(
+                Button,
+                {
+                    variant: 'ghost',
+                    onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
+                },
+                () => ['Capacity', h(ArrowUpDown, { class: 'ml-2 h-4 w-4' })],
+            ),
+        cell: ({ row }) => h('div', { class: 'lowercase' }, row.getValue('capacity')),
+    },
+    {
+        accessorKey: 'Price',
+        header: 'Price',
+        cell: ({ row }) => h('div', { class: 'capitalize' }, row.getValue('price')),
+    },
+    {
+        accessorKey: 'floor_id',
+        header: () => h('div', {}, 'Floor'),
+        cell: ({ row }) => h('div', row.getValue('floor_d')),
+    },
+    {
+        accessorKey: 'creator',
+        header: () => h('div', { class: 'text-right' }, 'Creator'),
+        cell: ({ row }) => h('div', { class: 'text-right' }, row.getValue('created_by')),
+    },
+    {
+        id: 'actions',
+        enableHiding: false,
+        cell: ({ row }) => {
+            const createdBy = row.getValue('created_by');
+            const isOwnerOrAdmin = user.id === row.original.created_by || user.role === 'admin';
+
+            return h('div', [
+                user.role === 'admin' && createdBy ? h('div', createdBy) : null,
+                isOwnerOrAdmin ? h(Button, { onClick: () => { alert('View details') } }, 'View') : null,
+            ]);
+        },
+    },
+];
+
+const sorting = ref<SortingState>([]);
+const columnFilters = ref<ColumnFiltersState>([]);
+const columnVisibility = ref<VisibilityState>({});
+const rowSelection = ref({});
+const expanded = ref<ExpandedState>({});
+
+const table = useVueTable({
+    data: props.data,
+    manualPagination: true,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+});
+</script>
+
+<template>
+    <div class="w-full">
+        <div class="flex items-center justify-between py-4">
+            <div class="flex items-center gap-2">
+                <Input
+                    class="max-w-sm"
+                    placeholder="Filter emails..."
+                    :model-value="table.getColumn('email')?.getFilterValue() as string"
+                    @update:model-value="table.getColumn('email')?.setFilterValue($event)"
+                />
+
+                <!-- زرار إنشاء غرفة -->
+                <Link :href="route('rooms.create')">
+                    <Button variant="default" class="flex items-center gap-2">
+                        <Plus class="w-4 h-4" />
+                        Create Room
+                    </Button>
+                </Link>
+            </div>
+
+            <DropdownMenu>
+                <DropdownMenuTrigger as-child>
+                    <Button variant="outline">
+                        Columns <ChevronDown class="ml-2 h-4 w-4" />
+                    </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                    <DropdownMenuCheckboxItem
+                        v-for="column in table.getAllColumns().filter((column) => column.getCanHide())"
+                        :key="column.id"
+                        class="capitalize"
+                        :model-value="column.getIsVisible()"
+                        @update:model-value="(value) => column.toggleVisibility(!!value)"
+                    >
+                        {{ column.id }}
+                    </DropdownMenuCheckboxItem>
+                </DropdownMenuContent>
+            </DropdownMenu>
+        </div>
+
+        <div class="rounded-md border">
+            <Table>
+                <TableHeader>
+                    <TableRow v-for="headerGroup in table.getHeaderGroups()" :key="headerGroup.id">
+                        <TableHead v-for="header in headerGroup.headers" :key="header.id">
+                            <FlexRender
+                                v-if="!header.isPlaceholder"
+                                :render="header.column.columnDef.header"
+                                :props="header.getContext()"
+                            />
+                        </TableHead>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
+                    <template v-if="table.getRowModel().rows?.length">
+                        <template v-for="row in table.getRowModel().rows" :key="row.id">
+                            <TableRow :data-state="row.getIsSelected() && 'selected'">
+                                <TableCell v-for="cell in row.getVisibleCells()" :key="cell.id">
+                                    <FlexRender :render="cell.column.columnDef.cell" :props="cell.getContext()" />
+                                </TableCell>
+                            </TableRow>
+                            <TableRow v-if="row.getIsExpanded()">
+                                <TableCell :colspan="row.getAllCells().length">
+                                    {{ JSON.stringify(row.original) }}
+                                </TableCell>
+                            </TableRow>
+                        </template>
+                    </template>
+
+                    <TableRow v-else>
+                        <TableCell :colspan="columns.length" class="h-24 text-center">No results.</TableCell>
+                    </TableRow>
+                </TableBody>
+            </Table>
+        </div>
+
+        <div class="flex items-center justify-end space-x-2 py-4">
+            <div class="text-muted-foreground flex-1 text-sm">
+                {{ table.getFilteredSelectedRowModel().rows.length }} of {{ table.getFilteredRowModel().rows.length }} row(s) selected.
+            </div>
+            <div class="space-x-2">
+                <Link v-for="link in links" :key="link.label" :href="link.url ? link.url : '#'">
+                    <Button v-html="link.label" variant="outline" />
+                </Link>
+            </div>
+        </div>
+    </div>
+</template>

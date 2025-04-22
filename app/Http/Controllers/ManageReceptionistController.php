@@ -1,35 +1,35 @@
 <?php
 
 namespace App\Http\Controllers;
-use Inertia\Inertia;
-use App\Models\User;
-use Illuminate\Http\Request;
-use App\Http\Resources\ReceptionistResource;
 use App\Http\Requests\StoreReceiptionistRequest;
 use App\Http\Requests\UpdateReceptionistRequest;
-use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Http\Resources\Resources\ReceptionistResource;
+use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Inertia\Inertia;
 
 class ManageReceptionistController extends Controller
 {
-    public function index()
-    {
-        if(auth()->user()->role ==='admin' || auth()->user()->role ==='manager') {
+    public function index() {
+        if (auth()->user()->role === 'admin' || auth()->user()->role === 'manager') {
 
             $receptionists = User::where('role', 'receptionist')->with('manager')->get();
             if ($receptionists->isEmpty()) {
                 return Inertia::render('manageReceptionists/Index', [
-                    'receptionists' => [],
-                    'message' => 'No receptionists found.'
+                    'pagination' => [
+                        'data' => [],
+                        'links' => [],
+                    ],
+                    'message' => 'There are no receptionist yet.',
                 ]);
             }
+
             return Inertia::render('manageReceptionists/Index', [
-                'receptionists' => ReceptionistResource::collection($receptionists)->toArray(request())
+                'pagination' => ReceptionistResource::collection($receptionists)->response()->getData(true),
             ]);
         }
         abort(403);
-
     }
 
 
@@ -72,20 +72,24 @@ class ManageReceptionistController extends Controller
     }
 
 
-    public function edit($id,UpdateReceptionistRequest $request)
+    public function edit($id)
     {
-        $request->authorize();
-        $receptionist = User::findOrFail($id);
+        $receptionist = User::find($id);
+        if (!$receptionist) {
+            return Inertia::render('manageReceptionists/Index', [
+                'message' => 'Receptionist not found.',
+            ]);
+        }
         return Inertia::render('manageReceptionists/Edit', [
             'receptionist' => $receptionist,
         ]);
     }
 
 
+
     public function update(UpdateReceptionistRequest $request, $id)
     {
         $request->authorize();
-
         $receptionist = User::findOrFail($id);
         $validated = $request->validated();
 
@@ -131,13 +135,11 @@ class ManageReceptionistController extends Controller
     public function ban($id)
     {
         $receptionist = User::findOrFail($id);
-        
-        // Check if user is authorized to ban this receptionist
+
         if (auth()->user()->role !== 'admin' && auth()->id() !== $receptionist->created_by) {
             return redirect()->back()->with('error', 'You are not authorized to ban this receptionist.');
         }
 
-        // Ban the receptionist with a comment
         $receptionist->ban([
             'comment' => 'Banned by ' . auth()->user()->name,
             'created_by_id' => auth()->id(),
@@ -149,13 +151,11 @@ class ManageReceptionistController extends Controller
     public function unban($id)
     {
         $receptionist = User::findOrFail($id);
-        
-        // Check if user is authorized to unban this receptionist
+
         if (auth()->user()->role !== 'admin' && auth()->id() !== $receptionist->created_by) {
             return redirect()->back()->with('error', 'You are not authorized to unban this receptionist.');
         }
 
-        // Unban the receptionist
         $receptionist->unban();
 
         return redirect()->route('receptionists.index')->with('message', 'Receptionist unbanned successfully.');

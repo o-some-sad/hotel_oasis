@@ -57,7 +57,7 @@ class LoginRequest extends FormRequest
         // If user exists and is banned, prevent login
         if ($user && $user->role === 'receptionist' && $user->isBanned()) {
             throw ValidationException::withMessages([
-                'email' => "You can't login right now, please contact the administrator.",
+                'email' => "Unfortunately, you can't login at the moment, please contact the administrator",
             ]);
         }
 
@@ -65,7 +65,7 @@ class LoginRequest extends FormRequest
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
-                'email' => trans('auth.failed'),
+                'email' => "Invalid credentials",
             ]);
         }
 

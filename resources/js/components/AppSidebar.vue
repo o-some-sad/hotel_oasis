@@ -26,9 +26,20 @@ const mainNavItems: NavItem[] = [
         allowedRoles: ["admin", "manager", "receptionist"],
     },
     {
+        title: "Manage Clients",
+        href: "/clients",
+        icon: UsersRound,
+        allowedRoles: ["admin", "manager"],
+    },
+    {
         title: "Approved clients",
         href: "/approved-clients",
         icon: UsersRound,
+    },
+    {
+        title: "Pending Approval",
+        href: "/pending-approvals",
+        icon: PersonStanding,
     }
 ];
 
@@ -59,7 +70,6 @@ const footerNavItems: NavItem[] = [
                 </SidebarMenuItem>
             </SidebarMenu>
         </SidebarHeader>
-
         <SidebarContent>
             <NavMain :items="mainNavItems" />
         </SidebarContent>

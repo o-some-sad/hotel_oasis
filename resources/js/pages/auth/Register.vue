@@ -13,13 +13,21 @@ const form = useForm({
     email: '',
     password: '',
     password_confirmation: '',
+    national_id: '',
+    mobile: '',
+    country: '',
+    gender: '',
+    avatar_img: null,
 });
+
 
 const submit = () => {
     form.post(route('register'), {
-        onFinish: () => form.reset('password', 'password_confirmation'),
+        forceFormData: true,
+        onFinish: () => form.reset('password', 'password_confirmation', 'avatar_img'),
     });
 };
+
 </script>
 
 <template>
@@ -68,15 +76,48 @@ const submit = () => {
                     <InputError :message="form.errors.password_confirmation" />
                 </div>
 
+            <div class="grid gap-2">
+                <Label for="national_id">National ID</Label>
+                <Input id="national_id" type="text" required v-model="form.national_id" placeholder="Your national ID" />
+                <InputError :message="form.errors.national_id" />
+            </div>
+
+            <div class="grid gap-2">
+                <Label for="mobile">Mobile</Label>
+                <Input id="mobile" type="text" required v-model="form.mobile" placeholder="Mobile number" />
+                <InputError :message="form.errors.mobile" />
+            </div>
+
+            <div class="grid gap-2">
+                <Label for="country">Country</Label>
+                <Input id="country" type="text" required v-model="form.country" placeholder="Country" />
+                <InputError :message="form.errors.country" />
+            </div>
+
+            <div class="grid gap-2">
+                <Label for="gender">Gender</Label>
+                <select id="gender" v-model="form.gender" required class="input">
+                    <option value="">Select gender</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                </select>
+                <InputError :message="form.errors.gender" />
+            </div>
+
+            <div class="grid gap-2">
+                <Label for="avatar_img">Avatar Image</Label>
+                <Input id="avatar_img" type="file" @change="e => form.avatar_img = e.target.files[0]" />
+                <InputError :message="form.errors.avatar_img" />
+            </div>
+
                 <Button type="submit" class="mt-2 w-full" tabindex="5" :disabled="form.processing">
                     <LoaderCircle v-if="form.processing" class="h-4 w-4 animate-spin" />
                     Create account
                 </Button>
-            </div>
-
-            <div class="text-center text-sm text-muted-foreground">
                 Already have an account?
-                <TextLink :href="route('login')" class="underline underline-offset-4" :tabindex="6">Log in</TextLink>
+                <div class="text-center text-sm text-muted-foreground">
+                    <TextLink :href="route('login')" class="underline underline-offset-4" :tabindex="6">Log in</TextLink>
+                </div>
             </div>
         </form>
     </AuthBase>
