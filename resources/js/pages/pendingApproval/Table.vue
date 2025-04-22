@@ -112,8 +112,7 @@ const table = useVueTable({
     // getPaginationRowModel: getPaginationRowModel(),
     // getSortedRowModel: getSortedRowModel(),
     // getFilteredRowModel: getFilteredRowModel(),
-    // },
-});// getExpandedRowModel: getExpandedRowModel(),
+    // getExpandedRowModel: getExpandedRowModel(),
     // onSortingChange: updaterOrValue => valueUpdater(updaterOrValue, sorting),
     // onColumnFiltersChange: updaterOrValue => valueUpdater(updaterOrValue, columnFilters),
     // onColumnVisibilityChange: updaterOrValue => valueUpdater(updaterOrValue, columnVisibility),
@@ -125,7 +124,8 @@ const table = useVueTable({
     //   get columnVisibility() { return columnVisibility.value },
     //   get rowSelection() { return rowSelection.value },
     //   get expanded() { return expanded.value },
-    
+    // },
+});
 </script>
 
 <template>

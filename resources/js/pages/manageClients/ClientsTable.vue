@@ -84,16 +84,28 @@ const columns: ColumnDef<RowData>[] = [
         id: 'actions',
         enableHiding: false,
         cell: ({ row }) => {
-            return h('h1', 
-                h(Button, {
-                    onClick: () => {
-                        
-                        
+            const client = row.original;
+            return h('div', { class: 'flex space-x-2 justify-end' }, [
+                h(Link, {
+                    href: route('clients.show', client.id),
+                    class: 'inline-flex items-center px-3 py-1 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-500'
+                }, "View"),
+                h(Link, {
+                    href: route('clients.edit', client.id),
+                    class: 'inline-flex items-center px-3 py-1 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-500'
+                }, "Edit"),
+                h(Link, {
+                    href: route('clients.destroy', client.id),
+                    method: 'delete',
+                    as: 'button',
+                    class: 'inline-flex items-center px-3 py-1 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-500',
+                    onclick: (event) => {
+                        if (!confirm('Are you sure you want to delete this client?')) {
+                            event.preventDefault();
+                        }
                     }
-                }, "View")
-
-
-            );
+                }, "Delete")
+            ]);
         },
     },
 ];
@@ -112,8 +124,7 @@ const table = useVueTable({
     // getPaginationRowModel: getPaginationRowModel(),
     // getSortedRowModel: getSortedRowModel(),
     // getFilteredRowModel: getFilteredRowModel(),
-    // },
-});// getExpandedRowModel: getExpandedRowModel(),
+    // getExpandedRowModel: getExpandedRowModel(),
     // onSortingChange: updaterOrValue => valueUpdater(updaterOrValue, sorting),
     // onColumnFiltersChange: updaterOrValue => valueUpdater(updaterOrValue, columnFilters),
     // onColumnVisibilityChange: updaterOrValue => valueUpdater(updaterOrValue, columnVisibility),
@@ -125,7 +136,8 @@ const table = useVueTable({
     //   get columnVisibility() { return columnVisibility.value },
     //   get rowSelection() { return rowSelection.value },
     //   get expanded() { return expanded.value },
-    
+    // },
+});
 </script>
 
 <template>
