@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ApprovedClientsController;
+use App\Http\Controllers\FloorController;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -9,8 +10,6 @@ use App\Http\Controllers\ManagerController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\PendingApprovalController;
 use App\Http\Controllers\ManageRoomController;
-
-
 
 Route::get('/', function () {
     return Inertia::render('Welcome');
@@ -95,9 +94,7 @@ Route::post('/clients/{id}/unban', [ClientController::class, 'unban'])
 
 Route::resource('pending-approvals', PendingApprovalController::class)->middleware('auth');
 
-    
-    
-    
-Route::resource( 'receptionists', ManageReceptionistController::class)->middleware('auth');
-Route::resource( 'rooms', ManageRoomController::class)->middleware('auth');
+Route::resource('receptionists', ManageReceptionistController::class)->middleware('auth');
+Route::resource('rooms', ManageRoomController::class)->middleware('auth');
+Route::resource('floors', FloorController::class)->middleware(['auth', 'verified']);
 

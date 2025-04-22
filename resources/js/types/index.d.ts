@@ -35,7 +35,18 @@ export interface User {
     email_verified_at: string | null;
     created_at: string;
     updated_at: string;
-    role: "client" | "manager" | "receptionist" | "admin";
+    role: 'client' | 'manager' | 'receptionist' | 'admin';
+}
+
+export interface Floor {
+    id: number;
+    name: string;
+    number: string;
+    created_by: number;
+    creator?: User;
+    created_at: string;
+    updated_at: string;
+    action?: boolean; // Whether the current user can edit/delete this floor
 }
 
 export type BreadcrumbItemType = BreadcrumbItem;
