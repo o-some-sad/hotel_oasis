@@ -2,16 +2,18 @@
 
 namespace App\Http\Requests;
 
+use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateRoomRequest extends FormRequest
 {
     /**
-     * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return false;
+        $id = $this->route('rooms');
+
+        return in_array(auth()->user()->role, ['admin']) || auth()->id() === User::find($id)->created_by;
     }
 
     /**
@@ -22,7 +24,10 @@ class UpdateRoomRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'number' => ['sometimes','required', 'string','min:4'],
+            'capacity' => ['sometimes','required', 'string'],
+            'price' => ['sometimes','required', 'string', 'min:6'],
+            'reserved' => ['sometimes','required', 'string'],
         ];
     }
 }

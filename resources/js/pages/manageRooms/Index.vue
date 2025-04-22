@@ -1,5 +1,32 @@
+<script setup lang="ts">
+import AppLayout from '@/layouts/AppLayout.vue';
+import { } from '@/components/ui/table';
+import { type BreadcrumbItem } from '@/types';
+import {Head, router} from '@inertiajs/vue3';
+import RoomsTable from './RoomsTable.vue';
+import { PaginationData, RowData } from '.';
+
+const breadcrumbs: BreadcrumbItem[] = [
+  {
+    title: 'Dashboard',
+    href: '/dashboard',
+  },
+  {
+    title: "Rooms",
+    href: "/rooms",
+  },
+];
+const props = defineProps<{
+  pagination: PaginationData;
+}>();
+const data = props.pagination.data;
+</script>
+
 <template>
-    <div class="p-6">
-        <h1 class="text-2xl font-bold mb-4">Rooms</h1>
+  <Head title="Rooms" />
+  <AppLayout :breadcrumbs="breadcrumbs">
+    <div class="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
+      <RoomsTable :links="props.pagination.links" :data="data" />
     </div>
+  </AppLayout>
 </template>

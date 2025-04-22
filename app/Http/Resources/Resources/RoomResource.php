@@ -17,6 +17,7 @@ class RoomResource extends JsonResource
             'capacity' => $this->capacity,
             'price' => '$' . number_format($this->price, 2),
             'floor' => $this->floor?->name,
+            'id'=>$this->id
         ];
 
         if (auth()->check()) {
