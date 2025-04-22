@@ -1,38 +1,41 @@
 <script setup lang="ts">
-import { SidebarGroup, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
-import { type NavItem, type SharedData } from '@/types';
+import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
+import { SharedData, type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/vue3';
+import { computed } from 'vue';
 
-defineProps<{
-    items: NavItem[];
-}>();
+interface Props {
+    items?: NavItem[];
+}
+
+defineProps<Props>();
 
 const page = usePage<SharedData>();
+
+const user = computed(() => page.props.auth.user);
+
+function isAllowed(item: NavItem): boolean {
+    if (!item.allowedRoles || !item.allowedRoles.length) {
+        return true;
+    }
+
+    return item.allowedRoles.includes(user.value.role);
+}
 </script>
 
 <template>
-    <SidebarGroup class="px-2 py-0">
-        <SidebarGroupLabel>Platform</SidebarGroupLabel>
-        <SidebarMenu>
-            <SidebarMenuItem v-for="item in items" :key="item.title">
-                <SidebarMenuButton
-                    as-child :is-active="item.href === page.url"
-                    :tooltip="item.title"
+    <SidebarMenu>
+        <SidebarMenuItem v-for="(item, index) in items" :key="index" v-show="isAllowed(item)">
+            <SidebarMenuButton :as-child="!item.isActive">
+                <component
+                    :is="item.isActive ? 'div' : Link"
+                    :href="item.isActive ? undefined : item.href"
+                    :class="['flex items-center gap-3', item.isActive && 'bg-blue-50 text-blue-900 dark:bg-blue-900/20 dark:text-blue-50']"
                 >
-                    <Link :href="item.href">
-                        <component :is="item.icon" />
-                        <span>{{ item.title }}</span>
-                    </Link>
-                </SidebarMenuButton>
-            </SidebarMenuItem>
-            <SidebarMenuItem>
-                <SidebarMenuButton as-child>
-                    <Link :href="'rooms'">
-                        <rect x="10" y="10" width="50" height="50" fill="transparent" stroke="blue" />
-                        <text x="20" y="40" fill="blue">Manage Rooms</text>
-                    </Link>
-                </SidebarMenuButton>
-            </SidebarMenuItem>
-        </SidebarMenu>
-    </SidebarGroup>
+                    <component v-if="item.icon" :is="item.icon" class="h-4 w-4" />
+                    {{ item.title }}
+                </component>
+            </SidebarMenuButton>
+        </SidebarMenuItem>
+    </SidebarMenu>
 </template>

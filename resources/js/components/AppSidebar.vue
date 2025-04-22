@@ -5,10 +5,8 @@ import NavUser from '@/components/NavUser.vue';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { SharedData, User, type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/vue3';
-import { BookOpen, Folder, LayoutGrid, PersonStanding, SquareUserRound, UsersRound } from 'lucide-vue-next';
+import { BookOpen, Building, Folder, LayoutGrid, PersonStanding, SquareUserRound, UsersRound } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
-
-
 
 const page = usePage<SharedData>();
 const user = page.props.auth.user as User;
@@ -20,27 +18,33 @@ const mainNavItems: NavItem[] = [
         icon: LayoutGrid,
     },
     {
-        title: "Receptionists",
-        href: "/receptionists",
+        title: 'Receptionists',
+        href: '/receptionists',
         icon: SquareUserRound,
-        allowedRoles: ["admin", "manager", "receptionist"],
+        allowedRoles: ['admin', 'manager', 'receptionist'],
     },
     {
-        title: "Manage Clients",
-        href: "/clients",
+        title: 'Manage Clients',
+        href: '/clients',
         icon: UsersRound,
-        allowedRoles: ["admin", "manager"],
+        allowedRoles: ['admin', 'manager'],
     },
     {
-        title: "Approved clients",
-        href: "/approved-clients",
+        title: 'Manage Floors',
+        href: '/floors',
+        icon: Building,
+        allowedRoles: ['admin', 'manager'],
+    },
+    {
+        title: 'Approved clients',
+        href: '/approved-clients',
         icon: UsersRound,
     },
     {
-        title: "Pending Approval",
-        href: "/pending-approvals",
+        title: 'Pending Approval',
+        href: '/pending-approvals',
         icon: PersonStanding,
-    }
+    },
 ];
 
 const footerNavItems: NavItem[] = [
