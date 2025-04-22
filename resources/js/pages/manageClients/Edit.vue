@@ -2,101 +2,101 @@
   <div>
     <Head title="Edit Client" />
     <AppLayout :breadcrumbs="breadcrumbs">
-      <div class="w-full p-6">
+      <div class="w-full p-6 bg-white dark:bg-gray-900">
         <div class="mb-6 flex justify-between items-center">
-          <h2 class="text-2xl font-bold">Edit Client</h2>
+          <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100">Edit Client</h2>
           <Link
             :href="route('clients.index')"
-            class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150"
+            class="inline-flex items-center px-4 py-2 bg-gray-800 dark:bg-gray-700 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 dark:hover:bg-gray-600 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150"
           >
             Back to List
           </Link>
         </div>
 
-        <div class="bg-white overflow-hidden shadow-sm rounded-lg">
-          <div class="p-6 bg-white border-b border-gray-200">
+        <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg">
+          <div class="p-6 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
             <form @submit.prevent="submit" class="space-y-6">
               <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <!-- Name -->
                 <div>
-                  <Label for="name" class="block text-sm font-medium text-gray-700">Name</Label>
+                  <Label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-200">Name</Label>
                   <Input 
                     id="name" 
                     v-model="form.name" 
                     type="text" 
-                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" 
+                    class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" 
                     required 
                   />
-                  <InputError :message="form.errors.name" class="mt-2" />
+                  <InputError :message="form.errors.name" class="mt-2 text-red-600 dark:text-red-400" />
                 </div>
 
                 <!-- Email -->
                 <div>
-                  <Label for="email" class="block text-sm font-medium text-gray-700">Email</Label>
+                  <Label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-200">Email</Label>
                   <Input 
                     id="email" 
                     v-model="form.email" 
                     type="email" 
-                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" 
+                    class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" 
                     required 
                   />
-                  <InputError :message="form.errors.email" class="mt-2" />
+                  <InputError :message="form.errors.email" class="mt-2 text-red-600 dark:text-red-400" />
                 </div>
 
                 <!-- Password (optional for editing) -->
                 <div>
-                  <Label for="password" class="block text-sm font-medium text-gray-700">Password (leave blank to keep current)</Label>
+                  <Label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-200">Password (leave blank to keep current)</Label>
                   <Input 
                     id="password" 
                     v-model="form.password" 
                     type="password" 
-                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" 
+                    class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" 
                   />
-                  <InputError :message="form.errors.password" class="mt-2" />
+                  <InputError :message="form.errors.password" class="mt-2 text-red-600 dark:text-red-400" />
                 </div>
 
                 <!-- National ID -->
                 <div>
-                  <Label for="national_id" class="block text-sm font-medium text-gray-700">National ID</Label>
+                  <Label for="national_id" class="block text-sm font-medium text-gray-700 dark:text-gray-200">National ID</Label>
                   <Input 
                     id="national_id" 
                     v-model="form.national_id" 
                     type="text" 
-                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" 
+                    class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" 
                     required 
                   />
-                  <InputError :message="form.errors.national_id" class="mt-2" />
+                  <InputError :message="form.errors.national_id" class="mt-2 text-red-600 dark:text-red-400" />
                 </div>
 
                 <!-- Mobile -->
                 <div>
-                  <Label for="mobile" class="block text-sm font-medium text-gray-700">Mobile</Label>
+                  <Label for="mobile" class="block text-sm font-medium text-gray-700 dark:text-gray-200">Mobile</Label>
                   <Input 
                     id="mobile" 
                     v-model="form.mobile" 
                     type="text" 
-                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" 
+                    class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" 
                     required 
                   />
-                  <InputError :message="form.errors.mobile" class="mt-2" />
+                  <InputError :message="form.errors.mobile" class="mt-2 text-red-600 dark:text-red-400" />
                 </div>
 
                 <!-- Country -->
                 <div>
-                  <Label for="country" class="block text-sm font-medium text-gray-700">Country</Label>
+                  <Label for="country" class="block text-sm font-medium text-gray-700 dark:text-gray-200">Country</Label>
                   <Input 
                     id="country" 
                     v-model="form.country" 
                     type="text" 
-                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" 
+                    class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" 
                     required 
                   />
-                  <InputError :message="form.errors.country" class="mt-2" />
+                  <InputError :message="form.errors.country" class="mt-2 text-red-600 dark:text-red-400" />
                 </div>
 
                 <!-- Gender -->
                 <div>
-                  <Label for="gender" class="block text-sm font-medium text-gray-700">Gender</Label>
+                  <Label for="gender" class="block text-sm font-medium text-gray-700 dark:text-gray-200">Gender</Label>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button 
@@ -118,29 +118,29 @@
                       </DropdownMenuCheckboxItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
-                  <InputError :message="form.errors.gender" class="mt-2" />
+                  <InputError :message="form.errors.gender" class="mt-2 text-red-600 dark:text-red-400" />
                 </div>
 
                 <!-- Avatar -->
                 <div>
-                  <Label for="avatar_image" class="block text-sm font-medium text-gray-700">Avatar Image</Label>
+                  <Label for="avatar_image" class="block text-sm font-medium text-gray-700 dark:text-gray-200">Avatar Image</Label>
                   <Input 
                     id="avatar_image" 
                     type="file" 
-                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" 
+                    class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" 
                     @input="form.avatar_image = $event.target.files[0]" 
                   />
                   <p v-if="client.avatar_img" class="mt-2 text-sm text-gray-500">
                     Current image: {{ client.avatar_img.split('/').pop() }}
                   </p>
-                  <InputError :message="form.errors.avatar_image" class="mt-2" />
+                  <InputError :message="form.errors.avatar_image" class="mt-2 text-red-600 dark:text-red-400" />
                 </div>
               </div>
 
               <div class="flex items-center justify-end">
                 <Button 
                   type="submit" 
-                  class="ml-4 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" 
+                  class="ml-4 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 dark:bg-indigo-500 hover:bg-indigo-700 dark:hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" 
                   :disabled="form.processing"
                 >
                   Update Client

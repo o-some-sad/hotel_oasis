@@ -88,17 +88,17 @@ const columns: ColumnDef<RowData>[] = [
             return h('div', { class: 'flex space-x-2 justify-end' }, [
                 h(Link, {
                     href: route('clients.show', client.id),
-                    class: 'inline-flex items-center px-3 py-1 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-500'
+                    class: 'inline-flex items-center px-3 py-1 bg-blue-600 dark:bg-blue-500 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-500 dark:hover:bg-blue-400 transition-colors'
                 }, "View"),
                 h(Link, {
                     href: route('clients.edit', client.id),
-                    class: 'inline-flex items-center px-3 py-1 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-500'
+                    class: 'inline-flex items-center px-3 py-1 bg-green-600 dark:bg-green-500 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-500 dark:hover:bg-green-400 transition-colors'
                 }, "Edit"),
                 h(Link, {
                     href: route('clients.destroy', client.id),
                     method: 'delete',
                     as: 'button',
-                    class: 'inline-flex items-center px-3 py-1 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-500',
+                    class: 'inline-flex items-center px-3 py-1 bg-red-600 dark:bg-red-500 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-500 dark:hover:bg-red-400 transition-colors',
                     onclick: (event) => {
                         if (!confirm('Are you sure you want to delete this client?')) {
                             event.preventDefault();
