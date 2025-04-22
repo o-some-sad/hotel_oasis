@@ -11,23 +11,25 @@ use Inertia\Inertia;
 
 class ManageReceptionistController extends Controller
 {
-    public function index()
-    {
-        if(auth()->user()->role ==='admin' || auth()->user()->role ==='manager') {
+    public function index() {
+        if (auth()->user()->role === 'admin' || auth()->user()->role === 'manager') {
 
             $receptionists = User::where('role', 'receptionist')->with('manager')->get();
             if ($receptionists->isEmpty()) {
                 return Inertia::render('manageReceptionists/Index', [
-                    'receptionists' => [],
-                    'message' => 'No receptionists found.'
+                    'pagination' => [
+                        'data' => [],
+                        'links' => [],
+                    ],
+                    'message' => 'There are no receptionist yet.',
                 ]);
             }
+
             return Inertia::render('manageReceptionists/Index', [
-                'receptionists' => ReceptionistResource::collection($receptionists)->toArray(request())
+                'pagination' => ReceptionistResource::collection($receptionists)->response()->getData(true),
             ]);
         }
         abort(403);
-
     }
 
 
@@ -70,20 +72,24 @@ class ManageReceptionistController extends Controller
     }
 
 
-    public function edit($id,UpdateReceptionistRequest $request)
+    public function edit($id)
     {
-        $request->authorize();
-        $receptionist = User::findOrFail($id);
+        $receptionist = User::find($id);
+        if (!$receptionist) {
+            return Inertia::render('manageReceptionists/Index', [
+                'message' => 'Receptionist not found.',
+            ]);
+        }
         return Inertia::render('manageReceptionists/Edit', [
             'receptionist' => $receptionist,
         ]);
     }
 
 
+
     public function update(UpdateReceptionistRequest $request, $id)
     {
         $request->authorize();
-
         $receptionist = User::findOrFail($id);
         $validated = $request->validated();
 
