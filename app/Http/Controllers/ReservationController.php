@@ -41,7 +41,40 @@ class ReservationController extends Controller
     public function store(StoreReservationRequest $request)
     {
         $validated = $request->validated();
-        dd($validated);
+        $room = Room::find($validated["room"])->where("reserved","=", false)->first();
+        $reservation = Reservation::create([
+            'room_id' => $room->id,
+            'client_id' => auth()->user()->id,
+            'accompany_number' => $room->capacity - 1,
+            'paid_price' => $room->price * $validated["duration"],
+        ]);
+
+        $room->update([
+            'reserved' => true,
+        ]);
+
+        dd($reservation);
+        
+        // $checkout_session = \Stripe\Checkout\Session::create([
+        //     'payment_method_types' => ['card'],
+        //     'mode' => 'payment',
+        //     'line_items' => [[
+        //         'price_data'=> [
+        //             'currency'=> 'usd',
+        //             'unit_amount'=> 1000,
+        //             'product_data'=> [
+        //                 'name'=> 'Oasis Hotel Room',
+        //             ]
+        //         ],
+        //         'quantity'=> 30
+        //     ]],
+        //     'success_url' => "http://localhost:8000/success",
+        //     'cancel_url' => "http://localhost:8000/cancel",
+        // ]);
+          
+        //   header("HTTP/1.1 303 See Other");
+        //   header("Location: " . $checkout_session->url);
+        //   exit;
 
     }
 

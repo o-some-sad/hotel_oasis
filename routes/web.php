@@ -21,6 +21,19 @@ Route::get('dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
+/*
+price_data: {
+        currency: "usd",
+        unit_amount: item.price * 100, //PRICE IS IN CENTS
+        product_data: {
+          name: item.title,
+        },
+      },
+      quantity: item.quantity,
+
+*/
+
+
 Route::resource('my-reservations', ReservationController::class)->middleware([
     'auth',
     EnsureUserHasRole::class . ":client",

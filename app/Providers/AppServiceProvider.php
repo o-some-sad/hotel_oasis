@@ -20,5 +20,6 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         //
+        \Stripe\Stripe::setApiKey(env("STRIPE_SECRET_KEY"));
     }
 }

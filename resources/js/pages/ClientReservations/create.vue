@@ -24,7 +24,7 @@ import RadioGroup from '@/components/ui/radio-group/RadioGroup.vue';
 import RadioGroupItem from '@/components/ui/radio-group/RadioGroupItem.vue';
 import Label from '@/components/ui/label/Label.vue';
 import { AcceptableValue } from 'reka-ui';
-import { router, Link } from '@inertiajs/vue3';
+import { router, Link, useForm } from '@inertiajs/vue3';
 import Slider from '@/components/ui/slider/Slider.vue';
 import NumberField from '@/components/ui/number-field/NumberField.vue';
 import NumberFieldContent from '@/components/ui/number-field/NumberFieldContent.vue';
@@ -56,7 +56,10 @@ const currentCapacity = new URLSearchParams(window.location.search).get('capacit
 
 const currentRoom = ref<any | null>(null)
 
-const form = ref({
+const form = useForm<{
+    room: any | null,
+    duration: number
+}>({
     room: null,
     duration: 2    
 })
@@ -66,7 +69,10 @@ function selectCapacity(capacity: AcceptableValue) {
 }
 
 function checkout(){
+    console.log(form.data());
+    
     // const paymentLink = route('createPaymentLink')
+    form.post(route('my-reservations.store'))
 }
 
 </script>
@@ -108,7 +114,7 @@ function checkout(){
                 <CardContent>
                     <ScrollArea class="max-h-72">
                         <RadioGroup default-value="option-one"
-                            @update:model-value="currentRoom = availableRooms.find(room => room.id === $event)">
+                            @update:model-value="currentRoom = availableRooms.find(room => room.id === $event); form.room = $event">
                             <Label v-for="room in props.availableRooms" :class="{
                                 'border-indigo-500': room.id === currentRoom?.id
                             }" class="flex items-center justify-between max-w-sm space-x-2 border p-4 rounded-lg">
@@ -162,7 +168,7 @@ function checkout(){
                     </div>
                     <Separator class="my-4" />
                     <div class="flex gap-4 space-y-1.5">
-                        <Button size="lg" class="w-fit">Book Now</Button>
+                        <Button @click="checkout" size="lg" class="w-fit">Book Now</Button>
                         <Link :href="route('my-reservations.index')" class="w-fit">
                             <Button size="lg" class="w-fit" variant="outline">Cancel</Button>
                         </Link>

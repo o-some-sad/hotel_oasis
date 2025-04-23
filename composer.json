@@ -16,6 +16,7 @@
         "laravel/tinker": "^2.10.1",
         "lwwcas/laravel-countries": "^4.12",
         "spatie/laravel-permission": "^6.17",
+        "stripe/stripe-php": "^17.1",
         "tightenco/ziggy": "^2.4"
     },
     "require-dev": {
