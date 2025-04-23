@@ -10,7 +10,7 @@ class PendingApprovalController extends Controller
 {
     public function index()
     {
-        $pagination = User::where('approved_by', null)
+        $pagination = User::where('approved_by', null)->where('role', 'client')
             ->paginate(10);
         
         return Inertia::render('pendingApproval/Index', [
