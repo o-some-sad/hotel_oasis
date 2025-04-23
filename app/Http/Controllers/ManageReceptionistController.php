@@ -42,6 +42,29 @@ class ManageReceptionistController extends Controller
     }
 
 
+    public function show($id)
+    {
+        if (auth()->user()->role === 'admin' || auth()->user()->role === 'manager') {
+            $receptionist = User::where('id', $id)
+                ->where('role', 'receptionist')
+                ->with('manager')
+                ->first();
+
+            if (!$receptionist) {
+                abort(404);
+            }
+
+            return Inertia::render('manageReceptionists/Show', [
+                'receptionist' => $receptionist,
+            ]);
+
+
+        }
+
+        abort(403);
+    }
+
+
     public function store(StoreReceiptionistRequest $request)
     {
         $request->authorize();
