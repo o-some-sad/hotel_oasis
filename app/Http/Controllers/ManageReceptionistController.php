@@ -64,6 +64,7 @@ class ManageReceptionistController extends Controller
             'mobile' => $validated['mobile'],
             'country' => $validated['country'],
             'role' => 'receptionist',
+            'approved_by' => auth()->id()
 
         ]);
 
