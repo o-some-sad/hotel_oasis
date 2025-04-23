@@ -1,12 +1,13 @@
 <script setup lang="ts">
-import { useForm } from '@inertiajs/vue3';
+import { router, useForm } from '@inertiajs/vue3';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
+import { User } from '@/types';
 
-const props = defineProps({
-    receptionist: Object,
-});
+const props = defineProps<{
+    receptionist: User;
+}>();
 
 const form = useForm({
     name: props.receptionist.name,
@@ -19,13 +20,10 @@ const form = useForm({
 });
 
 const submit = () => {
-    form.patch(route('receptionists.update', props.receptionist.id), {
-        onSuccess: () => {
-            window.location.href = '/receptionists';
-        },
-        onError: (errors) => {
-            console.log(errors);
-        },
+    console.log(form.data());
+    router.post(route('receptionists.update', props.receptionist.id), {
+        _method: 'put',
+        ...form.data()
     });
 };
 </script>

@@ -46,7 +46,6 @@ class ManageReceptionistController extends Controller
     {
         $request->authorize();
         $validated = $request->validated();
-
         if ($request->hasFile('avatar_image')) {
             $path = $request->file('avatar_image')->store('receptionists', 'public');
             $validated['avatar_img'] = $path;
@@ -108,6 +107,8 @@ class ManageReceptionistController extends Controller
 
             $path = $request->file('avatar_img')->store('receptionists', 'public');
             $validated['avatar_img'] = $path;
+        }else{
+            unset( $validated['avatar_img'] );
         }
 
         $dirtyData = collect($validated)->filter(function ($value, $key) use ($receptionist) {
