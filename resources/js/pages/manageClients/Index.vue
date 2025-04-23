@@ -4,6 +4,7 @@
         <div class="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
             <div class="flex items-center justify-between mb-4">
                 <h2 class="text-2xl font-bold">Client Management</h2>
+                <Button variant="outline" @click="exportClients"> Export Clients </Button>
             </div>
             
             <ClientsTable :links="links" :data="data" />
@@ -17,7 +18,7 @@ import { Head, Link, router } from '@inertiajs/vue3';
 import ClientsTable from './ClientsTable.vue';
 import { type BreadcrumbItem } from '@/types';
 import { PaginationData } from '.';
-
+import { Button } from '@/components/ui/button';
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Dashboard',
@@ -38,5 +39,8 @@ const links = props.pagination?.links ?? [];
 
 function goToPage(url: string) {
     router.visit(url);
+}
+function exportClients() {
+    window.open('/clients/export', '_blank');
 }
 </script>

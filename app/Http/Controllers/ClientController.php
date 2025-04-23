@@ -9,6 +9,9 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\ClientsExport;
+
 
 class ClientController extends Controller
 {
@@ -182,4 +185,15 @@ class ClientController extends Controller
 
         return redirect()->route('clients.show', compact("id"))->with('message', 'Client banned successfully.');
     }
+
+     public function export()
+    {
+         if(auth()->user()->role !== 'admin' && auth()->user()->role !== 'manager') {
+            abort(403);
+        }
+        return Excel::download(new ClientsExport, 'clients.xlsx');
+    } 
+
+
+
 } 

@@ -56,6 +56,9 @@ Route::post('receptionists/{id}/unban', [ManageReceptionistController::class, 'u
 // Route::resource('clients', ClientController::class)->middleware('auth');
 
 // Ban/unban routes for clients
+//excel 
+Route::get('/clients/export', [ClientController::class, 'export'])->middleware('auth')->name('clients.export');
+
 Route::post('clients/{id}/ban', [ClientController::class, 'ban'])
     ->middleware('auth')
     ->name('clients.ban');
@@ -97,4 +100,7 @@ Route::resource('pending-approvals', PendingApprovalController::class)->middlewa
 Route::resource('receptionists', ManageReceptionistController::class)->middleware('auth');
 Route::resource('rooms', ManageRoomController::class)->middleware('auth');
 Route::resource('floors', FloorController::class)->middleware(['auth', 'verified']);
+
+
+
 
