@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\ApprovedClientsController;
 use App\Http\Controllers\FloorController;
+use App\Http\Controllers\ReservationController;
+use App\Http\Middleware\EnsureUserHasRole;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -19,6 +21,10 @@ Route::get('dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
+Route::resource('my-reservations', ReservationController::class)->middleware([
+    'auth',
+    EnsureUserHasRole::class . ":client",
+]);
 
 //TODO: move to api.php after installing Laravel Sanctum
 Route::get('/api/countries', function (Response $response) {

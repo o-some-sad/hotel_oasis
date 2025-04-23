@@ -19,6 +19,12 @@ const mainNavItems: NavItem[] = [
         allowedRoles: ['client', 'admin', 'manager', 'receptionist'],
     },
     {
+        title: 'My Reservations',
+        href: '/my-reservations',
+        icon: BookOpen,
+        allowedRoles: ['client'],
+    },
+    {
         title: 'Receptionists',
         href: '/receptionists',
         icon: SquareUserRound,

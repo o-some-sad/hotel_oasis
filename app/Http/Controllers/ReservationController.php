@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreReservationRequest;
 use App\Http\Requests\UpdateReservationRequest;
 use App\Models\Reservation;
+use App\Models\Room;
+use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class ReservationController extends Controller
 {
@@ -13,15 +16,23 @@ class ReservationController extends Controller
      */
     public function index()
     {
-        //
+        return Inertia::render("ClientReservations/index");
     }
 
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(Request $request)
     {
-        //
+        $availableCapacities = array_unique(array_map(fn($room)=> $room['capacity'], Room::where("reserved", '=', false)->get()->toArray()));
+        $selectedCapacity = $request->query("capacity");
+        $availableRooms = [];
+
+        if ($selectedCapacity) {
+            $availableRooms = Room::with("floor")->where("reserved", "=", false)->where("capacity", "=", $selectedCapacity)->get()->toArray();
+        }
+        
+        return Inertia::render("ClientReservations/create", compact("availableCapacities", "availableRooms"));
     }
 
     /**
@@ -29,7 +40,9 @@ class ReservationController extends Controller
      */
     public function store(StoreReservationRequest $request)
     {
-        //
+        $validated = $request->validated();
+        dd($validated);
+
     }
 
     /**
