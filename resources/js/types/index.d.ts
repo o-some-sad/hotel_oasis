@@ -40,6 +40,7 @@ export interface User {
     national_id: string;
     mobile: string;
     country: string;
+    banned_at: string | null;
 }
 
 export interface Floor {

@@ -38,7 +38,7 @@
 
                                   <div class="mt-4 text-center">
                                       <Badge v-if="client.banned_at" variant="destructive"> Banned </Badge>
-                                      <Badge v-else variant="success"> Active </Badge>
+                                      <Badge v-else variant="outline"> Active </Badge>
                                   </div>
                               </div>
                           </div>
@@ -180,11 +180,10 @@ const confirmDelete = () => {
   isDeleteDialogOpen.value = false;
 };
 
-const getAvatarUrl = (avatarImg) => {
-  return `/public/storage/${avatarImg}`;
-};
 
-const handleImageError = (event) => {
+
+
+const handleImageError = (event: Event) => {
     if(!imgLoadFailed.value){
         event.target.src = '/default.jpg';
         imgLoadFailed.value = true;
