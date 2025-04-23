@@ -73,9 +73,11 @@ class ClientController extends Controller
         }
         
         $client = User::findOrFail($id);
+        $avatar_url = Storage::url($client->avatar_img);
         
         return Inertia::render('manageClients/Show', [
-            'client' => $client
+            'client' => $client,
+            'avatar_url'=> $avatar_url
         ]);
     }
 
@@ -161,7 +163,7 @@ class ClientController extends Controller
             'created_by_id' => auth()->id(),
         ]);
 
-        return redirect()->route('clients.index')->with('message', 'Client banned successfully.');
+        return redirect()->route('clients.show', compact("id"))->with('message', 'Client banned successfully.');
     }
 
     /**
@@ -178,6 +180,6 @@ class ClientController extends Controller
         // Unban the client
         $client->unban();
 
-        return redirect()->route('clients.index')->with('message', 'Client unbanned successfully.');
+        return redirect()->route('clients.show', compact("id"))->with('message', 'Client banned successfully.');
     }
 } 

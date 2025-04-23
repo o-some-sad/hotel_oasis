@@ -23,7 +23,7 @@
                               <div class="overflow-hidden rounded-lg p-4">
                                   <div v-if="client.avatar_img" class="mb-4 flex justify-center">
                                       <img
-                                          :src="getAvatarUrl(client.avatar_img)"
+                                          :src="props.avatar_url"
                                           alt="Client Avatar"
                                           class="h-48 w-48 rounded-full object-cover"
                                           @error="handleImageError"
@@ -84,6 +84,7 @@
 
                                       <div v-if="client.banned_at" class="rounded-md p-4">
                                           <p class="text-sm font-medium">Banned At</p>
+                                          <p class="mt-1 text-lg">{{ new Date(client.banned_at).toLocaleString() }}</p>
                                       </div>
                                   </div>
 
@@ -118,7 +119,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import {
   AlertDialog,
   AlertDialogAction,
@@ -134,10 +135,16 @@ import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { ref } from 'vue';
+import { User } from "@/types"
 
-const props = defineProps({
-  client: Object,
-});
+const imgLoadFailed = ref(false);
+
+const props = defineProps<{
+    client: User;
+    avatar_url: string
+}>();
+
+
 
 const breadcrumbs = [
   {
@@ -174,11 +181,14 @@ const confirmDelete = () => {
 };
 
 const getAvatarUrl = (avatarImg) => {
-  return `/storage/${avatarImg}`;
+  return `/public/storage/${avatarImg}`;
 };
 
 const handleImageError = (event) => {
-  event.target.src = '/images/default-avatar.png';
+    if(!imgLoadFailed.value){
+        event.target.src = '/default.jpg';
+        imgLoadFailed.value = true;
+    }
 };
 
 const getInitials = (name) => {
