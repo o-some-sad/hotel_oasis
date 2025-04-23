@@ -24,6 +24,8 @@ const props = defineProps<{
 
 const page = usePage<SharedData>();
 const user = page.props.auth.user as User;
+const data = ref<RowData[]>([...props.data]);
+
 const columns: ColumnDef<RowData>[] = [
     {
         id: 'select',
@@ -75,7 +77,7 @@ const columns: ColumnDef<RowData>[] = [
     },
     {
         accessorKey: 'gender',
-        header: ()=> h('div', { class: 'text-right' }, 'Gender'),
+        header: () => h('div', { class: 'text-right' }, 'Gender'),
         cell: ({ row }) => {
             return h('div', { class: 'text-right' }, row.getValue('gender'));
         },
@@ -88,23 +90,27 @@ const columns: ColumnDef<RowData>[] = [
             return h('div', { class: 'flex space-x-2 justify-end' }, [
                 h(Link, {
                     href: route('clients.show', client.id),
-                    class: 'inline-flex items-center px-3 py-1 bg-blue-600 dark:bg-blue-500 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-500 dark:hover:bg-blue-400 transition-colors'
-                }, "View"),
+                }, h(Button, { variant: 'default' }, "View")),
+
                 h(Link, {
                     href: route('clients.edit', client.id),
-                    class: 'inline-flex items-center px-3 py-1 bg-green-600 dark:bg-green-500 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-500 dark:hover:bg-green-400 transition-colors'
-                }, "Edit"),
+                }, h(Button, { variant: 'outline' }, "Edit")),
+
                 h(Link, {
                     href: route('clients.destroy', client.id),
                     method: 'delete',
-                    as: 'button',
-                    class: 'inline-flex items-center px-3 py-1 bg-red-600 dark:bg-red-500 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-500 dark:hover:bg-red-400 transition-colors',
+                    preserveState: true,
+                    onSuccess: () => {                     
+                        data.value = data.value.filter((d) => d.id !== client.id);
+                    }
+                }, h(Button, {
+                    variant: 'destructive',
                     onclick: (event) => {
                         if (!confirm('Are you sure you want to delete this client?')) {
                             event.preventDefault();
                         }
                     }
-                }, "Delete")
+                }, "Delete"))
             ]);
         },
     },
@@ -117,7 +123,7 @@ const rowSelection = ref({});
 const expanded = ref<ExpandedState>({});
 
 const table = useVueTable({
-    data: props.data,
+    data: data,
     manualPagination: true,
     columns,
     getCoreRowModel: getCoreRowModel(),
@@ -144,32 +150,29 @@ const table = useVueTable({
     <div class="w-full">
         <div class="flex items-center justify-between py-4">
             <div class="flex items-center gap-2">
-                <Input
-                    class="max-w-sm"
-                    placeholder="Filter emails..."
+                <Input class="max-w-sm" placeholder="Filter emails..."
                     :model-value="table.getColumn('email')?.getFilterValue() as string"
-                    @update:model-value="table.getColumn('email')?.setFilterValue($event)"
-                />
+                    @update:model-value="table.getColumn('email')?.setFilterValue($event)" />
+                <Link :href="route('clients.create')">
                 <Button variant="outline">
-                    <Plus />
+                    Create Client
                 </Button>
+                </Link>
             </div>
             <DropdownMenu>
                 <DropdownMenuTrigger as-child>
-                    <Button variant="outline"> Columns <ChevronDown class="ml-2 h-4 w-4" /> </Button>
+                    <Button variant="outline"> Columns
+                        <ChevronDown class="ml-2 h-4 w-4" />
+                    </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
                     <DropdownMenuCheckboxItem
-                        v-for="column in table.getAllColumns().filter((column) => column.getCanHide())"
-                        :key="column.id"
-                        class="capitalize"
-                        :model-value="column.getIsVisible()"
-                        @update:model-value="
+                        v-for="column in table.getAllColumns().filter((column) => column.getCanHide())" :key="column.id"
+                        class="capitalize" :model-value="column.getIsVisible()" @update:model-value="
                             (value) => {
                                 column.toggleVisibility(!!value);
                             }
-                        "
-                    >
+                        ">
                         {{ column.id }}
                     </DropdownMenuCheckboxItem>
                 </DropdownMenuContent>
@@ -180,7 +183,8 @@ const table = useVueTable({
                 <TableHeader>
                     <TableRow v-for="headerGroup in table.getHeaderGroups()" :key="headerGroup.id">
                         <TableHead v-for="header in headerGroup.headers" :key="header.id">
-                            <FlexRender v-if="!header.isPlaceholder" :render="header.column.columnDef.header" :props="header.getContext()" />
+                            <FlexRender v-if="!header.isPlaceholder" :render="header.column.columnDef.header"
+                                :props="header.getContext()" />
                         </TableHead>
                     </TableRow>
                 </TableHeader>
@@ -209,11 +213,13 @@ const table = useVueTable({
 
         <div class="flex items-center justify-end space-x-2 py-4">
             <div class="text-muted-foreground flex-1 text-sm">
-                {{ table.getFilteredSelectedRowModel().rows.length }} of {{ table.getFilteredRowModel().rows.length }} row(s) selected.
+                {{ table.getFilteredSelectedRowModel().rows.length }} of {{ table.getFilteredRowModel().rows.length }}
+                row(s)
+                selected.
             </div>
             <div class="space-x-2">
                 <Link v-for="link in links" :key="link.label" :href="link.url ? link.url : '#'">
-                    <Button v-html="link.label" variant="outline" />
+                <Button v-html="link.label" variant="outline" />
                 </Link>
             </div>
         </div>
