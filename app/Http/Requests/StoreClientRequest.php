@@ -26,7 +26,7 @@ class StoreClientRequest extends FormRequest
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8',
             'national_id' => 'required|string|max:255|unique:users',
-            'mobile' => 'required|string|max:255',
+            'mobile' => 'required|string|max:255|unique:users',
             'country' => 'required|string|max:255',
             'gender' => 'required|string|in:male,female',
             'avatar_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
