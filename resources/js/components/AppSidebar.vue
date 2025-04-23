@@ -16,12 +16,13 @@ const mainNavItems: NavItem[] = [
         title: 'Dashboard',
         href: '/dashboard',
         icon: LayoutGrid,
+        allowedRoles: ['client', 'admin', 'manager', 'receptionist'],
     },
     {
         title: 'Receptionists',
         href: '/receptionists',
         icon: SquareUserRound,
-        allowedRoles: ['admin', 'manager', 'receptionist'],
+        allowedRoles: ['admin', 'manager'],
     },
     {
         title: 'Manage Clients',
@@ -39,11 +40,13 @@ const mainNavItems: NavItem[] = [
         title: 'Approved clients',
         href: '/approved-clients',
         icon: UsersRound,
+        allowedRoles: ['admin', 'manager', 'receptionist'],
     },
     {
         title: 'Pending Approval',
         href: '/pending-approvals',
         icon: PersonStanding,
+        allowedRoles: ['admin', 'manager', 'receptionist'],
     },
 ];
 
