@@ -4,29 +4,24 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 
-defineProps<{ floors: { id: number; name: string }[] }>();
+const props = defineProps<{
+    floors: { id: number; name: string }[]
+}>();
 
 const form = useForm({
-    number: '',
     capacity: '',
     price: '',
     floor_id: '',
 });
 
 const submit = () => {
+    console.log(form);
     form.post(route('rooms.store'));
 };
 </script>
 
 <template>
     <form @submit.prevent="submit" class="space-y-6 max-w-md mx-auto">
-        <!-- Room Number -->
-        <div>
-            <label for="number" class="block mb-1 text-sm font-medium">Room Number</label>
-            <Input id="number" type="text" v-model="form.number" />
-            <p v-if="form.errors.number" class="text-red-500 text-sm mt-1">{{ form.errors.number }}</p>
-        </div>
-
         <!-- Capacity -->
         <div>
             <label for="capacity" class="block mb-1 text-sm font-medium">Capacity</label>
@@ -50,9 +45,9 @@ const submit = () => {
                 </SelectTrigger>
                 <SelectContent>
                     <SelectItem
-                        v-for="floor in floors"
+                        v-for="floor in props.floors"
                         :key="floor.id"
-                        :value="floor.id.toString()"
+                        :value="floor.id"
                     >
                         {{ floor.name }}
                     </SelectItem>

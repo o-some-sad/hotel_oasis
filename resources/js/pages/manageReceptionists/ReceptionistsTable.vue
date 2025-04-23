@@ -10,10 +10,11 @@ import type { ColumnDef } from '@tanstack/vue-table';
 import { FlexRender, getCoreRowModel, useVueTable } from '@tanstack/vue-table';
 import { ArrowUpDown, Plus } from 'lucide-vue-next';
 import { h, ref, watch } from 'vue';
+import {PaginationData} from "@/pages/manageRooms";
 
 const props = defineProps<{
     data: Receptionist[];
-    links: any[];
+    links: PaginationData['links']
 }>();
 
 // Create a reactive local copy of the data
@@ -96,7 +97,7 @@ const columns: ColumnDef<Receptionist>[] = [
                                 receptionist.banned_at ? handleUnban(receptionist) : handleBan(receptionist);
                             }
                         },
-                        disabled: !isActionEnabled, // إذا كانت قيمة action هي false، يتم تعطيل الزر
+                        disabled: !isActionEnabled,
                     },
                     receptionist.banned_at ? 'Unban' : 'Ban',
                 ),
@@ -110,9 +111,22 @@ const columns: ColumnDef<Receptionist>[] = [
                                 handleUpdate(receptionist);
                             }
                         },
-                        disabled: !isActionEnabled, // إذا كانت قيمة action هي false، يتم تعطيل الزر
+                        disabled: !isActionEnabled,
                     },
                     'Edit',
+                ),
+                h(
+                    Button,
+                    {
+                        variant: 'outline',
+                        onClick: () => {
+                            if (isActionEnabled) {
+                                handleView(receptionist);
+                            }
+                        },
+                        disabled: !isActionEnabled,
+                    },
+                    'View',
                 ),
 
                 h(
@@ -124,7 +138,7 @@ const columns: ColumnDef<Receptionist>[] = [
                                 handleDelete(receptionist);
                             }
                         },
-                        disabled: !isActionEnabled, // إذا كانت قيمة action هي false، يتم تعطيل الزر
+                        disabled: !isActionEnabled,
                     },
                     'Delete',
                 ),
@@ -172,15 +186,19 @@ function handleDelete(receptionist: Receptionist) {
         router.delete(route('receptionists.destroy', { receptionist: receptionist.id }), {
             preserveState: true,
             onSuccess: () => {
-                // Remove the deleted receptionist from our reactive data array
                 receptionists.value = receptionists.value.filter((r) => r.id !== receptionist.id);
             },
         });
     }
 }
 
+
+
 function handleUpdate(receptionist: Receptionist) {
     router.get(route('receptionists.edit', { receptionist: receptionist.id }));
+}
+function handleView(receptionist: Receptionist) {
+    router.get(route('receptionists.show', { receptionist: receptionist.id }));
 }
 
 const table = useVueTable({

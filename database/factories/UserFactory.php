@@ -37,19 +37,41 @@ class UserFactory extends Factory
             'name' => $this->faker->name,
             'email' => $this->faker->unique()->safeEmail,
             'email_verified_at' => now(),
-            'password' => bcrypt('password'), 
+            'password' => bcrypt('password'),
             'remember_token' => Str::random(10),
             'mobile' => $this->faker->unique()->numerify('01#########'),
             'national_id' => $this->faker->unique()->numerify('##############'),
             'avatar_img' => $this->faker->imageUrl(300, 300, 'people'),
-            'country' => $this->faker->countryCode, 
+            'country' => $this->faker->countryCode,
             'gender' => $this->faker->randomElement(['male', 'female']),
-            'is_approved' => true, 
-            'created_by' => null,  
-            'approved_by' => null, 
+            'is_approved' => true,
+            'created_by' => null,
+            'approved_by' => null,
             'banned_at' => null,
             'last_login_in' => now(),
             'role' => 'manager'
+        ]);
+    }
+
+    public function receptionist(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'name' => $this->faker->name,
+            'email' => $this->faker->unique()->safeEmail,
+            'email_verified_at' => now(),
+            'password' => bcrypt('password'),
+            'remember_token' => Str::random(10),
+            'mobile' => $this->faker->unique()->numerify('01#########'),
+            'national_id' => $this->faker->unique()->numerify('##############'),
+            'avatar_img' => $this->faker->imageUrl(300, 300, 'people'),
+            'country' => $this->faker->countryCode,
+            'gender' => $this->faker->randomElement(['male', 'female']),
+            'is_approved' => true,
+            'created_by' => auth()->id(),
+            'approved_by' => null,
+            'banned_at' => null,
+            'last_login_in' => now(),
+            'role' => 'receptionist'
         ]);
     }
 
