@@ -78,7 +78,7 @@ class FloorController extends Controller
     {
         $floor = Floor::findOrFail($id);
         
-        // Check if the user can edit this floor
+        // Check if the user can edit this floor and make sure 
         $user = Auth::user();
         if ($user->role !== 'admin' && $floor->created_by !== $user->id) {
             abort(403, 'Unauthorized action.');
