@@ -16,22 +16,6 @@
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <div class="text-center">
-                <span
-                    v-if="room.is_reserved"
-                    class="inline-flex items-center rounded-full bg-red-100 dark:bg-red-900 px-2.5 py-0.5 text-xs font-medium text-red-800 dark:text-red-200"
-                >
-                  Reserved
-                </span>
-                                <span
-                                    v-else
-                                    class="inline-flex items-center rounded-full bg-green-100 dark:bg-green-900 px-2.5 py-0.5 text-xs font-medium text-green-800 dark:text-green-200"
-                                >
-                  Unreserved
-                </span>
-                            </div>
-
-                            <!-- Info -->
                             <div class="md:col-span-2 space-y-4">
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div
@@ -45,10 +29,13 @@
                                                 {{ formatDate(room[key]) }}
                                             </template>
                                             <template v-else-if="key === 'price'">
-                                                ${{ (room[key] / 100).toFixed(2) }}
+                                                ${{ parseFloat(room[key].replace('$', '')).toFixed(2) }}
                                             </template>
                                             <template v-else-if="key === 'is_reserved'">
                                                 {{ room[key] ? 'Yes' : 'No' }}
+                                            </template>
+                                            <template v-else-if="key === 'floor_id'">
+                                                {{ room[key] }}
                                             </template>
                                             <template v-else>
                                                 {{ room[key] }}
@@ -71,7 +58,6 @@
                 </div>
             </div>
 
-            <!-- Delete Dialog -->
             <AlertDialog :open="isDeleteDialogOpen" @update:open="isDeleteDialogOpen = $event">
                 <AlertDialogContent>
                     <AlertDialogHeader>
@@ -112,8 +98,8 @@ const props = defineProps({
     room: Object
 })
 
-const room = props.room
-console.log(props.room);
+const room = props.room.data;
+console.log(room);
 
 
 const breadcrumbs = [
@@ -131,7 +117,6 @@ const infoFields = {
     created_by: 'Creator',
     is_reserved: 'Reserved'
 }
-console.log(room.floor)
 
 const isDeleteDialogOpen = ref(false)
 
@@ -148,6 +133,6 @@ function confirmDelete(room) {
 }
 
 const formatDate = (date) => {
-    return new Date(date).toLocaleString()
+    return new Date(date).toLocaleDateString('en-GB', { year: 'numeric', month: '2-digit', day: '2-digit' });
 }
 </script>

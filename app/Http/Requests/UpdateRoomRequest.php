@@ -12,9 +12,8 @@ class UpdateRoomRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        $id = $this->route('room');
+       return true;
 
-        return in_array(auth()->user()->role, ['admin']) || auth()->id() === User::find($id)->created_by;
     }
 
     /**
@@ -26,11 +25,10 @@ class UpdateRoomRequest extends FormRequest
     {
         try {
             $id = optional($this->route('room'))->id ?? $this->route('room');
-
             return [
                 'number' => ['sometimes', 'required', 'integer', Rule::unique('rooms', 'number')->ignore($id)],
                 'capacity' => ['sometimes', 'required', 'integer', 'min:1'],
-                'price' => ['sometimes', 'required', 'integer', 'min:0'],
+                'price' => ['sometimes', 'required', 'numeric', 'min:0'],
                 'reserved' => ['sometimes', 'required', 'boolean'],
                 'floor_id' => ['sometimes', 'required', 'integer', 'exists:floors,id'],
             ];

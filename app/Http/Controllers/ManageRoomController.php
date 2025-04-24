@@ -97,27 +97,23 @@ class ManageRoomController extends Controller
     ]);
   }
 
-    public function update(Request $request, $id)
+    public function update(UpdateRoomRequest $request, $id)
     {
-//        $request->authorize();
-
+        $request->authorize();
         $room = Room::findOrFail($id);
-        $validated = $request->all();
-//        $dirtyData = collect($validated)->filter(function ($value, $key) use ($room) {
-//            return $room->$key != $value;
-//        })->toArray();
-
+        $validated = $request->validated();
+        $dirtyData = collect($validated)->filter(function ($value, $key) use ($room) {
+            return $room->$key != $value;
+        })->toArray();
+        $dirtyData['price'] =  $validated['price']*100;
         try {
-//            if (!empty($dirtyData)) {
-//                $room->update($dirtyData);
-           $room= $room->update($validated);
-//
-//
-            dd($room);
-        } catch (\Exception $e) {
-            dd($e->getMessage());
-        }
+            if (!empty($dirtyData)) {
+                $room->update($dirtyData);
+            }
 
+        } catch (\Exception $e) {
+            return($e->getMessage());
+        }
         return redirect()->route('rooms.index')->with('message', 'Room updated successfully.');
     }
 
@@ -127,7 +123,7 @@ class ManageRoomController extends Controller
     $request->authorize();
     $room = Room::findOrFail($id);
 
-    if($room['reserved']=== false){
+    if($room['reserved']=== 0   ){
       $room->delete();
     }
     else{
