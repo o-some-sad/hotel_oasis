@@ -36,6 +36,7 @@ Route::resource("approved-clients", ApprovedClientsController::class)->middlewar
 require __DIR__ . '/settings.php';
 require __DIR__ . '/auth.php';
 
+Route::get('/pending-approval/{id}/approve', [PendingApprovalController::class, 'approve'])->name('pending-approvals.approve');
 
 Route::get('/managers', [ManagerController::class, 'index'])
     ->middleware('auth')
