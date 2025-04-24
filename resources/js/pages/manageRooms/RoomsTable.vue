@@ -6,7 +6,7 @@ import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMe
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { FlexRender, getCoreRowModel, useVueTable } from '@tanstack/vue-table';
-import { ArrowUpDown, ChevronDown } from 'lucide-vue-next';
+import {ArrowUpDown, ChevronDown, Plus} from 'lucide-vue-next';
 import { h, ref } from 'vue';
 import { PaginationData, RowData } from '.';
 import { Link, usePage } from '@inertiajs/vue3';
@@ -128,6 +128,20 @@ const table = useVueTable({
 </script>
 <template>
     <div class="w-full">
+        <div class="flex items-center justify-between py-4">
+            <Input
+                class="max-w-sm"
+                placeholder="Filter price..."
+                :model-value="table.getColumn('price')?.getFilterValue()"
+                @update:model-value="table.getColumn('price')?.setFilterValue($event)"
+            />
+            <Link :href="route('rooms.create')">
+                <Button class="flex items-center gap-2">
+                    <Plus class="h-4 w-4" />
+                    Add Room
+                </Button>
+            </Link>
+        </div>
         <div class="flex items-center justify-between py-4">
             <DropdownMenu>
                 <DropdownMenuTrigger as-child>

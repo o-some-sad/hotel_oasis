@@ -2,87 +2,57 @@
     <div>
         <Head title="Receptionist Details" />
         <AppLayout :breadcrumbs="breadcrumbs">
-            <div class="flex flex-col gap-4 rounded-xl p-4 bg-white dark:bg-gray-900">
-                <div class="bg-white dark:bg-gray-800 shadow-sm rounded-xl overflow-hidden">
-                    <div class="p-6 text-gray-900 dark:text-gray-100">
+            <div class="flex flex-col gap-4 rounded-xl p-4">
+                <div class="overflow-hidden rounded-xl shadow-sm">
+                    <div class="p-6">
                         <div class="mb-6 flex justify-between">
                             <h3 class="text-lg font-medium">{{ receptionist.name }}</h3>
-                            <Link
-                                :href="route('receptionists.index')"
-                                class="bg-gray-200 px-4 py-2 rounded-md text-sm font-medium text-gray-800 hover:bg-gray-300"
-                            >
-                                Back to List
-                            </Link>
+                            <Link :href="route('receptionists.index')" class="rounded-md px-4 py-2 text-sm font-medium"> Back to List </Link>
                         </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
                             <!-- Avatar -->
                             <div>
-                                <div class="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg">
-                                    <div v-if="receptionist.avatar_img" class="flex justify-center mb-4">
-                                        <img
-                                            :src="`/storage/${receptionist.avatar_img}`"
-                                            alt="Avatar"
-                                            class="h-48 w-48 rounded-full object-cover"
-                                        />
-
+                                <div class="rounded-lg">
+                                    <div v-if="receptionist.avatar_img" class="mb-4 flex justify-center">
+                                        <img :src="`/storage/${receptionist.avatar_img}`" alt="Avatar" class="h-48 w-48 rounded-full object-cover" />
                                     </div>
-                                    <div v-else class="h-48 flex items-center justify-center rounded-full bg-gray-200 dark:bg-gray-800 mb-4">
-                                        <span class="text-2xl text-gray-500 dark:text-gray-400">No Image</span>
+                                    <div v-else class="mb-4 flex h-48 items-center justify-center rounded-full">
+                                        <span class="text-2xl">No Image</span>
                                     </div>
 
                                     <div class="text-center">
-                    <span
-                        v-if="receptionist.banned_at"
-                        class="inline-flex items-center rounded-full bg-red-100 dark:bg-red-900 px-2.5 py-0.5 text-xs font-medium text-red-800 dark:text-red-200"
-                    >
-                      Banned
-                    </span>
                                         <span
-                                            v-else
-                                            class="inline-flex items-center rounded-full bg-green-100 dark:bg-green-900 px-2.5 py-0.5 text-xs font-medium text-green-800 dark:text-green-200"
+                                            v-if="receptionist.banned_at"
+                                            class="inline-flex items-center rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-medium text-red-800 dark:bg-red-900 dark:text-red-200"
                                         >
-                      Active
-                    </span>
+                                            Banned
+                                        </span>
+                                        <span v-else class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium"> Active </span>
                                     </div>
                                 </div>
                             </div>
 
                             <!-- Info -->
-                            <div class="md:col-span-2 space-y-4">
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div v-for="(label, key) in infoFields" :key="key" class="bg-gray-50 dark:bg-gray-700 p-4 rounded-md">
-                                        <p class="text-sm font-medium text-gray-500">{{ label }}</p>
+                            <div class="space-y-4 md:col-span-2">
+                                <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                                    <div v-for="(label, key) in infoFields" :key="key" class="rounded-md">
+                                        <p class="text-sm font-medium">{{ label }}</p>
                                         <p class="mt-1 text-lg capitalize">
                                             {{ key === 'created_at' ? formatDate(receptionist[key]) : receptionist[key] }}
                                         </p>
                                     </div>
-                                    <div
-                                        v-if="receptionist.banned_at"
-                                        class="bg-gray-50 dark:bg-gray-700 p-4 rounded-md"
-                                    >
-                                        <p class="text-sm font-medium text-gray-500">Banned At</p>
+                                    <div v-if="receptionist.banned_at" class="rounded-md">
+                                        <p class="text-sm font-medium">Banned At</p>
                                         <p class="mt-1 text-lg">{{ formatDate(receptionist.banned_at) }}</p>
                                     </div>
                                 </div>
 
                                 <div class="mt-6 flex space-x-3">
+                                    <Button v-if="receptionist.banned_at" class="" @click="handleUnban(receptionist)"> Unban Client </Button>
+                                    <Button v-else class="" @click="handleBan(receptionist)"> Ban Client </Button>
                                     <Button
-                                        v-if="receptionist.banned_at"
-                                        class="bg-green-600 hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-400"
-                                        @click="handleUnban(receptionist)"
-                                    >
-                                        Unban Client
-                                    </Button>
-                                    <Button
-                                        v-else
-                                        class="bg-orange-600 hover:bg-orange-700 dark:bg-orange-500 dark:hover:bg-orange-400"
-                                        @click="handleBan(receptionist)"
-                                    >
-                                        Ban Client
-                                    </Button>
-                                    <Button
-                                        class="bg-red-600 hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-400"
+                                        class="bg-red-600 hover:bg-red-700 dark:bg-red-500 dark:text-white dark:hover:bg-red-400"
                                         @click="openDeleteDialog"
                                     >
                                         Delete Client
@@ -99,9 +69,7 @@
                 <AlertDialogContent>
                     <AlertDialogHeader>
                         <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                        <AlertDialogDescription>
-                            This action cannot be undone. This will permanently delete the client.
-                        </AlertDialogDescription>
+                        <AlertDialogDescription> This action cannot be undone. This will permanently delete the client. </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                         <AlertDialogCancel @click="isDeleteDialogOpen = false">Cancel</AlertDialogCancel>
@@ -116,10 +84,6 @@
 </template>
 
 <script setup>
-import {Head, Link, router} from '@inertiajs/vue3'
-import { ref } from 'vue'
-import AppLayout from '@/layouts/AppLayout.vue'
-import { Button } from '@/components/ui/button'
 import {
     AlertDialog,
     AlertDialogAction,
@@ -128,23 +92,27 @@ import {
     AlertDialogDescription,
     AlertDialogFooter,
     AlertDialogHeader,
-    AlertDialogTitle
-} from '@/components/ui/alert-dialog'
+    AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { Button } from '@/components/ui/button';
+import AppLayout from '@/layouts/AppLayout.vue';
+import { Head, Link, router } from '@inertiajs/vue3';
+import { ref } from 'vue';
 // import type {Receptionist} from "@/types/index.js";
 
 const props = defineProps({
-    receptionist: Object
-})
+    receptionist: Object,
+});
 
-const receptionist = props.receptionist
+const receptionist = props.receptionist;
 
-console.log('Receptionist Props:', receptionist)
+console.log('Receptionist Props:', receptionist);
 
 const breadcrumbs = [
     { title: 'Dashboard', href: '/dashboard' },
     { title: 'Manage Receptionists', href: '/receptionists' },
-    { title: 'Receptionist Details', href: `/receptionists/${receptionist.id}` }
-]
+    { title: 'Receptionist Details', href: `/receptionists/${receptionist.id}` },
+];
 
 const infoFields = {
     name: 'Name',
@@ -153,14 +121,14 @@ const infoFields = {
     mobile: 'Mobile',
     country: 'Country',
     gender: 'Gender',
-    created_at: 'Created At'
-}
+    created_at: 'Created At',
+};
 
-const isDeleteDialogOpen = ref(false)
+const isDeleteDialogOpen = ref(false);
 
 const openDeleteDialog = () => {
-    isDeleteDialogOpen.value = true
-}
+    isDeleteDialogOpen.value = true;
+};
 
 function handleBan(receptionist) {
     router.patch(
@@ -199,14 +167,12 @@ function handleUnban(receptionist) {
 function confirmDelete(receptionist) {
     router.delete(route('receptionists.destroy', { receptionist: receptionist.id }), {
         onSuccess: () => {
-            router.visit('/receptionists')
+            router.visit('/receptionists');
         },
-    })
+    });
 }
-
 
 const formatDate = (date) => {
-    return new Date(date).toLocaleString()
-}
+    return new Date(date).toLocaleString();
+};
 </script>
-

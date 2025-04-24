@@ -37,6 +37,7 @@ class FloorController extends Controller
         });
         
         return Inertia::render('manageFloors/Index', [
+            'pagination' => $floors,
             'data' => $floors->items(),
             'links' => $floors->links(),
         ]);

@@ -6,7 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import type { Floor } from '@/types';
 import { SharedData } from '@/types';
 import { Link, router, usePage } from '@inertiajs/vue3';
-import type { ColumnDef } from '@tanstack/vue-table';
+import type { ColumnDef, ColumnFiltersState, SortingState, VisibilityState } from '@tanstack/vue-table';
 import { FlexRender, getCoreRowModel, useVueTable } from '@tanstack/vue-table';
 import { ArrowUpDown, Plus } from 'lucide-vue-next';
 import { h, ref, watch } from 'vue';
@@ -31,6 +31,12 @@ watch(
 const page = usePage<SharedData>();
 const user = page.props.auth.user;
 const isAdmin = user.role === 'admin';
+
+// Add states for sorting, filtering, visibility and row selection
+const sorting = ref<SortingState>([]);
+const columnFilters = ref<ColumnFiltersState>([]);
+const columnVisibility = ref<VisibilityState>({});
+const rowSelection = ref({});
 
 const columns: ColumnDef<Floor>[] = [
     {
@@ -141,6 +147,27 @@ const table = useVueTable({
     columns,
     getCoreRowModel: getCoreRowModel(),
     manualPagination: true,
+    state: {
+        get rowSelection() {
+            return rowSelection.value;
+        },
+        get columnFilters() {
+            return columnFilters.value;
+        },
+        get columnVisibility() {
+            return columnVisibility.value;
+        },
+        get sorting() {
+            return sorting.value;
+        },
+    },
+    onRowSelectionChange: (updater) => {
+        if (typeof updater === 'function') {
+            rowSelection.value = updater(rowSelection.value);
+        } else {
+            rowSelection.value = updater;
+        }
+    },
 });
 </script>
 
@@ -184,10 +211,16 @@ const table = useVueTable({
             </Table>
         </div>
 
-        <div class="flex justify-end space-x-2 py-4">
-            <Link v-for="link in links" :key="link.label" :href="link.url || '#'">
-                <Button v-html="link.label" variant="outline" />
-            </Link>
+        <div class="flex items-center justify-end space-x-2 py-4">
+            <div class="text-muted-foreground flex-1 text-sm">
+                {{ table.getFilteredSelectedRowModel().rows.length }} of {{ table.getFilteredRowModel().rows.length }}
+                row(s) selected.
+            </div>
+            <div class="space-x-2">
+                <Link v-for="link in links" :key="link.label" :href="link.url ? link.url : '#'">
+                    <Button v-html="link.label" variant="outline" />
+                </Link>
+            </div>
         </div>
     </div>
 </template>
