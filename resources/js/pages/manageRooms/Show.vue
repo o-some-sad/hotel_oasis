@@ -26,7 +26,7 @@
                                         <p class="text-sm font-medium text-gray-500">{{ label }}</p>
                                         <p class="mt-1 text-lg capitalize">
                                             <template v-if="key === 'created_at'">
-                                                {{ formatDate(room[key]) }}
+                                                {{ room[key] }}
                                             </template>
                                             <template v-else-if="key === 'price'">
                                                 ${{ parseFloat(room[key].replace('$', '')).toFixed(2) }}
@@ -132,7 +132,5 @@ function confirmDelete(room) {
     })
 }
 
-const formatDate = (date) => {
-    return new Date(date).toLocaleDateString('en-GB', { year: 'numeric', month: '2-digit', day: '2-digit' });
-}
+
 </script>

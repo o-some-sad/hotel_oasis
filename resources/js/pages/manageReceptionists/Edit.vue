@@ -1,9 +1,23 @@
 <script setup lang="ts">
-import { router, useForm } from '@inertiajs/vue3';
+import { router, useForm, Link } from '@inertiajs/vue3';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue
+} from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { User } from '@/types';
+import {
+    Form,
+    FormControl,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage
+} from '@/components/ui/form';
 
 const props = defineProps<{
     receptionist: User;
@@ -16,7 +30,7 @@ const form = useForm({
     gender: props.receptionist.gender,
     mobile: props.receptionist.mobile,
     country: props.receptionist.country,
-    national_id:props.receptionist.national_id
+    national_id: props.receptionist.national_id
 });
 
 const submit = () => {
@@ -29,63 +43,102 @@ const submit = () => {
 </script>
 
 <template>
-    <form @submit.prevent="submit" class="space-y-6 max-w-md mx-auto">
-        <!-- Name -->
-        <div>
-            <label for="name" class="block mb-1 text-sm font-medium">Name</label>
-            <Input id="name" type="text" v-model="form.name" />
-            <p v-if="form.errors.name" class="text-red-500 text-sm mt-1">{{ form.errors.name }}</p>
+    <div class="container mx-auto my-8 p-6 bg-white dark:bg-gray-900 rounded-md shadow-md">
+        <div class="mb-6 flex justify-between items-center">
+            <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100">Edit Receptionist</h2>
+            <Link :href="route('receptionists.index')" class="bg-gray-200 px-4 py-2 rounded-md text-sm font-medium text-gray-800 hover:bg-gray-300 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700">
+                Back to List
+            </Link>
         </div>
+        <Form>
+            <form @submit.prevent="submit" class="space-y-6">
+                <FormField name="name">
+                    <FormItem>
+                        <FormLabel>Name</FormLabel>
+                        <FormControl>
+                            <Input type="text" v-model="form.name" class="rounded-md" />
+                        </FormControl>
+                        <FormMessage>{{ form.errors.name }}</FormMessage>
+                    </FormItem>
+                </FormField>
 
-        <!-- Email -->
-        <div>
-            <label for="email" class="block mb-1 text-sm font-medium">Email</label>
-            <Input id="email" type="email" v-model="form.email" />
-            <p v-if="form.errors.email" class="text-red-500 text-sm mt-1">{{ form.errors.email }}</p>
-        </div>
+                <FormField name="email">
+                    <FormItem>
+                        <FormLabel>Email</FormLabel>
+                        <FormControl>
+                            <Input type="email" v-model="form.email" class="rounded-md" />
+                        </FormControl>
+                        <FormMessage>{{ form.errors.email }}</FormMessage>
+                    </FormItem>
+                </FormField>
 
-        <!-- Gender -->
-        <div>
-            <label class="block mb-1 text-sm font-medium">Gender</label>
-            <Select v-model="form.gender">
-                <SelectTrigger>
-                    <SelectValue placeholder="Select Gender" />
-                </SelectTrigger>
-                <SelectContent>
-                    <SelectItem value="male">Male</SelectItem>
-                    <SelectItem value="female">Female</SelectItem>
-                </SelectContent>
-            </Select>
-            <p v-if="form.errors.gender" class="text-red-500 text-sm mt-1">{{ form.errors.gender }}</p>
-        </div>
+                <FormField name="gender">
+                    <FormItem>
+                        <FormLabel>Gender</FormLabel>
+                        <FormControl>
+                            <Select v-model="form.gender" class="rounded-md">
+                                <SelectTrigger class="w-full">
+                                    <SelectValue placeholder="Select Gender" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="male">Male</SelectItem>
+                                    <SelectItem value="female">Female</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </FormControl>
+                        <FormMessage>{{ form.errors.gender }}</FormMessage>
+                    </FormItem>
+                </FormField>
 
-        <!-- Mobile -->
-        <div>
-            <label for="mobile" class="block mb-1 text-sm font-medium">Mobile</label>
-            <Input id="mobile" type="text" v-model="form.mobile" />
-            <p v-if="form.errors.mobile" class="text-red-500 text-sm mt-1">{{ form.errors.mobile }}</p>
-        </div>
+                <FormField name="mobile">
+                    <FormItem>
+                        <FormLabel>Mobile</FormLabel>
+                        <FormControl>
+                            <Input type="text" v-model="form.mobile" class="rounded-md" />
+                        </FormControl>
+                        <FormMessage>{{ form.errors.mobile }}</FormMessage>
+                    </FormItem>
+                </FormField>
 
-        <!-- Country -->
-        <div>
-            <label for="country" class="block mb-1 text-sm font-medium">Country</label>
-            <Input id="country" type="text" v-model="form.country" />
-            <p v-if="form.errors.country" class="text-red-500 text-sm mt-1">{{ form.errors.country }}</p>
-        </div>
+                <FormField name="country">
+                    <FormItem>
+                        <FormLabel>Country</FormLabel>
+                        <FormControl>
+                            <Input type="text" v-model="form.country" class="rounded-md" />
+                        </FormControl>
+                        <FormMessage>{{ form.errors.country }}</FormMessage>
+                    </FormItem>
+                </FormField>
 
-        <!-- Profile Image -->
-        <div>
-            <label for="avatar_img" class="block mb-1 text-sm font-medium">Profile Image</label>
-            <input
-                type="file"
-                @change="(e) => (form.avatar_img = e.target.files[0])"
-                class="input input-bordered w-full"
-                name="avatar_img"
-            />
-            <p v-if="form.errors.avatar_img" class="text-red-500 text-sm mt-1">{{ form.errors.avatar_img }}</p>
-        </div>
+                <FormField name="national_id">
+                    <FormItem>
+                        <FormLabel>National ID</FormLabel>
+                        <FormControl>
+                            <Input type="text" v-model="form.national_id" class="rounded-md" disabled />
+                        </FormControl>
+                        <FormMessage>{{ form.errors.national_id }}</FormMessage>
+                    </FormItem>
+                </FormField>
 
-        <!-- Submit Button -->
-        <Button type="submit" :disabled="form.processing">Update Receptionist</Button>
-    </form>
+                <FormField name="avatar_img">
+                    <FormItem>
+                        <FormLabel>Profile Image</FormLabel>
+                        <FormControl>
+                            <input
+                                type="file"
+                                @change="(e) => (form.avatar_img = e.target.files[0])"
+                                class="input input-bordered w-full rounded-md"
+                                name="avatar_img"
+                            />
+                        </FormControl>
+                        <FormMessage>{{ form.errors.avatar_img }}</FormMessage>
+                    </FormItem>
+                </FormField>
+
+                <div>
+                    <Button type="submit" :disabled="form.processing" class="w-full py-2 rounded-md font-semibold">Update Receptionist</Button>
+                </div>
+            </form>
+        </Form>
+    </div>
 </template>
