@@ -2,28 +2,21 @@
     <div>
         <Head title="Room Details" />
         <AppLayout :breadcrumbs="breadcrumbs">
-            <div class="flex flex-col gap-4 rounded-xl p-4 bg-white dark:bg-gray-900">
-                <div class="bg-white dark:bg-gray-800 shadow-sm rounded-xl overflow-hidden">
-                    <div class="p-6 text-gray-900 dark:text-gray-100">
+            <div class="flex flex-col gap-4 rounded-xl p-4">
+                <div class="overflow-hidden rounded-xl shadow-sm">
+                    <div class="p-6">
                         <div class="mb-6 flex justify-between">
                             <h3 class="text-lg font-medium">{{ room.number }}</h3>
-                            <Link
-                                :href="route('rooms.index')"
-                                class="bg-gray-200 px-4 py-2 rounded-md text-sm font-medium text-gray-800 hover:bg-gray-300"
-                            >
-                                Back to List
+                            <Link :href="route('rooms.index')" class="rounded-md px-4 py-2 text-sm font-medium">
+                                <Button>Back to List</Butt>
                             </Link>
                         </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <div class="md:col-span-2 space-y-4">
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div
-                                        v-for="(label, key) in infoFields"
-                                        :key="key"
-                                        class="bg-gray-50 dark:bg-gray-700 p-4 rounded-md"
-                                    >
-                                        <p class="text-sm font-medium text-gray-500">{{ label }}</p>
+                        <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
+                            <div class="space-y-4 md:col-span-2">
+                                <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                                    <div v-for="(label, key) in infoFields" :key="key" class="rounded-md p-4">
+                                        <p class="text-sm font-medium">{{ label }}</p>
                                         <p class="mt-1 text-lg capitalize">
                                             <template v-if="key === 'created_at'">
                                                 {{ room[key] }}
@@ -45,10 +38,7 @@
                                 </div>
 
                                 <div class="mt-6 flex space-x-3">
-                                    <Button
-                                        class="bg-red-600 hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-400"
-                                        @click="openDeleteDialog"
-                                    >
+                                    <Button class="bg-red-600 hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-400" @click="openDeleteDialog">
                                         Delete Room
                                     </Button>
                                 </div>
@@ -62,15 +52,11 @@
                 <AlertDialogContent>
                     <AlertDialogHeader>
                         <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                        <AlertDialogDescription>
-                            This action cannot be undone. This will permanently delete the room.
-                        </AlertDialogDescription>
+                        <AlertDialogDescription> This action cannot be undone. This will permanently delete the room. </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                         <AlertDialogCancel @click="isDeleteDialogOpen = false">Cancel</AlertDialogCancel>
-                        <AlertDialogAction @click="confirmDelete(room)" class="bg-red-600 text-white hover:bg-red-700">
-                            Delete
-                        </AlertDialogAction>
+                        <AlertDialogAction @click="confirmDelete(room)" class="bg-red-600 text-white hover:bg-red-700"> Delete </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
@@ -79,10 +65,6 @@
 </template>
 
 <script setup>
-import { Head, Link, router } from '@inertiajs/vue3'
-import { ref } from 'vue'
-import AppLayout from '@/layouts/AppLayout.vue'
-import { Button } from '@/components/ui/button'
 import {
     AlertDialog,
     AlertDialogAction,
@@ -91,22 +73,26 @@ import {
     AlertDialogDescription,
     AlertDialogFooter,
     AlertDialogHeader,
-    AlertDialogTitle
-} from '@/components/ui/alert-dialog'
+    AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { Button } from '@/components/ui/button';
+import Button from '@/components/ui/button/Button.vue';
+import AppLayout from '@/layouts/AppLayout.vue';
+import { Head, Link, router } from '@inertiajs/vue3';
+import { ref } from 'vue';
 
 const props = defineProps({
-    room: Object
-})
+    room: Object,
+});
 
 const room = props.room.data;
 console.log(room);
 
-
 const breadcrumbs = [
     { title: 'Dashboard', href: '/dashboard' },
     { title: 'Manage Rooms', href: '/rooms' },
-    { title: 'Room Details', href: `/rooms/${room.id}` }
-]
+    { title: 'Room Details', href: `/rooms/${room.id}` },
+];
 
 const infoFields = {
     number: 'Number',
@@ -115,22 +101,20 @@ const infoFields = {
     floor_id: 'Floor',
     created_at: 'Created At',
     created_by: 'Creator',
-    is_reserved: 'Reserved'
-}
+    is_reserved: 'Reserved',
+};
 
-const isDeleteDialogOpen = ref(false)
+const isDeleteDialogOpen = ref(false);
 
 const openDeleteDialog = () => {
-    isDeleteDialogOpen.value = true
-}
+    isDeleteDialogOpen.value = true;
+};
 
 function confirmDelete(room) {
     router.delete(route('rooms.destroy', { room: room.id }), {
         onSuccess: () => {
-            router.visit('/rooms')
+            router.visit('/rooms');
         },
-    })
+    });
 }
-
-
 </script>

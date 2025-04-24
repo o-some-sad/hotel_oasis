@@ -7,7 +7,9 @@
                     <div class="p-6">
                         <div class="mb-6 flex justify-between">
                             <h3 class="text-lg font-medium">{{ receptionist.name }}</h3>
-                            <Link :href="route('receptionists.index')" class="rounded-md px-4 py-2 text-sm font-medium"> Back to List </Link>
+                            <Link :href="route('receptionists.index')" class="rounded-md px-4 py-2 text-sm font-medium">
+                                <Button> Back to List</Button>
+                            </Link>
                         </div>
 
                         <div class="grid grid-cols-1 gap-6 md:grid-cols-3">

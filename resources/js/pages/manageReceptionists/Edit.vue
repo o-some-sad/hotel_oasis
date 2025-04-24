@@ -1,23 +1,10 @@
 <script setup lang="ts">
-import { router, useForm, Link } from '@inertiajs/vue3';
-import { Input } from '@/components/ui/input';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue
-} from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { User } from '@/types';
-import {
-    Form,
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage
-} from '@/components/ui/form';
+import { Link, router, useForm } from '@inertiajs/vue3';
 
 const props = defineProps<{
     receptionist: User;
@@ -30,24 +17,24 @@ const form = useForm({
     gender: props.receptionist.gender,
     mobile: props.receptionist.mobile,
     country: props.receptionist.country,
-    national_id: props.receptionist.national_id
+    national_id: props.receptionist.national_id,
 });
 
 const submit = () => {
     console.log(form.data());
     router.post(route('receptionists.update', props.receptionist.id), {
         _method: 'put',
-        ...form.data()
+        ...form.data(),
     });
 };
 </script>
 
 <template>
-    <div class="container mx-auto my-8 p-6 bg-white dark:bg-gray-900 rounded-md shadow-md">
-        <div class="mb-6 flex justify-between items-center">
-            <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100">Edit Receptionist</h2>
-            <Link :href="route('receptionists.index')" class="bg-gray-200 px-4 py-2 rounded-md text-sm font-medium text-gray-800 hover:bg-gray-300 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700">
-                Back to List
+    <div class="container mx-auto my-8 rounded-md p-6 shadow-md">
+        <div class="mb-6 flex items-center justify-between">
+            <h2 class="text-xl font-semibold">Edit Receptionist</h2>
+            <Link :href="route('receptionists.index')" class="rounded-md px-4 py-2 text-sm font-medium">
+                <Button> Back to List </Button>
             </Link>
         </div>
         <Form>
@@ -136,7 +123,7 @@ const submit = () => {
                 </FormField>
 
                 <div>
-                    <Button type="submit" :disabled="form.processing" class="w-full py-2 rounded-md font-semibold">Update Receptionist</Button>
+                    <Button type="submit" :disabled="form.processing" class="w-full rounded-md py-2 font-semibold">Update Receptionist</Button>
                 </div>
             </form>
         </Form>
