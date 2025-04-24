@@ -14,19 +14,37 @@ class ManageReceptionistController extends Controller
     public function index() {
         if (auth()->user()->role === 'admin' || auth()->user()->role === 'manager') {
 
-            $receptionists = User::where('role', 'receptionist')->with('manager')->get();
+            $receptionists = User::where('role', 'receptionist')->with('manager')->paginate(10);
+            
             if ($receptionists->isEmpty()) {
                 return Inertia::render('manageReceptionists/Index', [
                     'pagination' => [
                         'data' => [],
                         'links' => [],
+                        'current_page' => 1,
+                        'last_page' => 1,
+                        'from' => null,
+                        'to' => null,
+                        'total' => 0,
                     ],
                     'message' => 'There are no receptionist yet.',
                 ]);
             }
 
+            // Transform the receptionists using the resource
+            $resourceCollection = ReceptionistResource::collection($receptionists);
+            
+            // Get the pagination information directly from Laravel's paginator
             return Inertia::render('manageReceptionists/Index', [
-                'pagination' => ReceptionistResource::collection($receptionists)->response()->getData(true),
+                'pagination' => [
+                    'data' => $resourceCollection->toArray(request()),
+                    'links' => $receptionists->toArray()['links'],
+                    'current_page' => $receptionists->currentPage(),
+                    'last_page' => $receptionists->lastPage(),
+                    'from' => $receptionists->firstItem(),
+                    'to' => $receptionists->lastItem(),
+                    'total' => $receptionists->total(),
+                ],
             ]);
         }
         abort(403);
