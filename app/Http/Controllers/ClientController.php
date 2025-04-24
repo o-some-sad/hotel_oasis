@@ -58,8 +58,8 @@ class ClientController extends Controller
         $validated['password'] = Hash::make($validated['password']);
         $validated['role'] = 'client';
         $validated['created_by'] = auth()->id();
-        $validated['is_approved'] = true;
-        $validated['approved_by'] = auth()->id();
+        $validated['is_approved'] = false;
+        $validated['approved_by'] = null;
 
         User::create($validated);
 
