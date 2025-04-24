@@ -167,7 +167,6 @@ function handleBan(receptionist: Receptionist) {
         {
             preserveState: true,
             onSuccess: () => {
-                // Update the local state immediately
                 receptionist.banned_at = new Date().toISOString();
             },
         },
