@@ -16,7 +16,9 @@ class ReservationController extends Controller
      */
     public function index()
     {
-        return Inertia::render("ClientReservations/index");
+        $data = Reservation::with("room.floor")->get()->toArray();
+        // dd($reservations);
+        return Inertia::render("ClientReservations/index", compact("data"));
     }
 
     /**
