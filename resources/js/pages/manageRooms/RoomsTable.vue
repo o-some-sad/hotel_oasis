@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { FlexRender, getCoreRowModel, useVueTable } from '@tanstack/vue-table';
 import {ArrowUpDown, ChevronDown, Plus} from 'lucide-vue-next';
-import { h, ref } from 'vue';
+import { h, ref, watch } from 'vue';
 import { PaginationData, RowData } from '.';
 import { Link, usePage } from '@inertiajs/vue3';
 import { router } from '@inertiajs/vue3';
@@ -17,8 +17,35 @@ const props = defineProps<{
     links: PaginationData['links']
 }>();
 
+// Create a reactive local copy of the data
+const rooms = ref<RowData[]>([...props.data]);
+
+// Watch for changes to props.data and update the local copy
+watch(
+    () => props.data,
+    (newData) => {
+        rooms.value = [...newData];
+    },
+    { deep: true },
+);
+
 const page = usePage<SharedData>();
 const user = page.props.auth.user as User;
+
+// Handle room deletion
+function handleDelete(room: RowData) {
+    const isOwnerOrAdmin = user.id === room.created_by || user.role === 'admin';
+    
+    if (isOwnerOrAdmin && confirm('Are you sure you want to delete this room?')) {
+        router.delete(route('rooms.destroy', room.id), {
+            preserveState: true,
+            onSuccess: () => {
+                // Remove the deleted room from our reactive data array
+                rooms.value = rooms.value.filter(r => r.id !== room.id);
+            },
+        });
+    }
+}
 
 const columns: ColumnDef<RowData>[] = [
     {
@@ -102,9 +129,7 @@ const columns: ColumnDef<RowData>[] = [
                 h(Button, {
                     variant: 'destructive',
                     onClick: () => {
-                        if (isOwnerOrAdmin && confirm('Are you sure you want to delete this room?')) {
-                            router.delete(route('rooms.destroy', room.id));
-                        }
+                        handleDelete(room);
                     },
                     disabled: !isOwnerOrAdmin,
                 }, 'Delete'),
@@ -120,7 +145,9 @@ const rowSelection = ref({});
 const expanded = ref<ExpandedState>({});
 
 const table = useVueTable({
-    data: props.data,
+    get data() {
+        return rooms.value;
+    },
     manualPagination: true,
     columns,
     getCoreRowModel: getCoreRowModel(),

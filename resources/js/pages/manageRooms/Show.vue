@@ -8,7 +8,7 @@
                         <div class="mb-6 flex justify-between">
                             <h3 class="text-lg font-medium">{{ room.number }}</h3>
                             <Link :href="route('rooms.index')" class="rounded-md px-4 py-2 text-sm font-medium">
-                                <Button>Back to List</Butt>
+                                <Button>Back to List</Button>
                             </Link>
                         </div>
 
@@ -76,7 +76,6 @@ import {
     AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
-import Button from '@/components/ui/button/Button.vue';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { ref } from 'vue';
