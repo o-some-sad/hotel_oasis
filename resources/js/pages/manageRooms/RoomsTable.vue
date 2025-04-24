@@ -6,81 +6,133 @@ import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMe
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { FlexRender, getCoreRowModel, useVueTable } from '@tanstack/vue-table';
-import { ArrowUpDown, ChevronDown, Plus } from 'lucide-vue-next';
-import { h, ref } from 'vue';
+import {ArrowUpDown, ChevronDown, Plus} from 'lucide-vue-next';
+import { h, ref, watch } from 'vue';
 import { PaginationData, RowData } from '.';
 import { Link, usePage } from '@inertiajs/vue3';
-import { SharedData, User } from '@/types';
+import { router } from '@inertiajs/vue3';
 
 const props = defineProps<{
     data: RowData[],
     links: PaginationData['links']
 }>();
 
+// Create a reactive local copy of the data
+const rooms = ref<RowData[]>([...props.data]);
+
+// Watch for changes to props.data and update the local copy
+watch(
+    () => props.data,
+    (newData) => {
+        rooms.value = [...newData];
+    },
+    { deep: true },
+);
+
 const page = usePage<SharedData>();
 const user = page.props.auth.user as User;
+
+// Handle room deletion
+function handleDelete(room: RowData) {
+    const isOwnerOrAdmin = user.id === room.created_by || user.role === 'admin';
+    
+    if (isOwnerOrAdmin && confirm('Are you sure you want to delete this room?')) {
+        router.delete(route('rooms.destroy', room.id), {
+            preserveState: true,
+            onSuccess: () => {
+                // Remove the deleted room from our reactive data array
+                rooms.value = rooms.value.filter(r => r.id !== room.id);
+            },
+        });
+    }
+}
 
 const columns: ColumnDef<RowData>[] = [
     {
         id: 'select',
         header: ({ table }) =>
-            h(Checkbox, {
-                modelValue: table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && 'indeterminate'),
-                'onUpdate:modelValue': (value) => table.toggleAllPageRowsSelected(!!value),
-                ariaLabel: 'Select all',
-            }),
+            h('div', { class: 'text-center' }, [
+                h(Checkbox, {
+                    modelValue: table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && 'indeterminate'),
+                    'onUpdate:modelValue': (value) => table.toggleAllPageRowsSelected(!!value),
+                    ariaLabel: 'Select all',
+                })
+            ]),
         cell: ({ row }) =>
-            h(Checkbox, {
-                modelValue: row.getIsSelected(),
-                'onUpdate:modelValue': (value) => row.toggleSelected(!!value),
-                ariaLabel: 'Select row',
-            }),
+            h('div', { class: 'text-center' }, [
+                h(Checkbox, {
+                    modelValue: row.getIsSelected(),
+                    'onUpdate:modelValue': (value) => row.toggleSelected(!!value),
+                    ariaLabel: 'Select row',
+                })
+            ]),
         enableSorting: false,
         enableHiding: false,
     },
     {
         accessorKey: 'number',
-        header: 'Number',
-        cell: ({ row }) => h('div', { class: 'capitalize' }, row.getValue('number')),
+        header: () => h('div', { class: 'text-left' }, 'Number'),
+        cell: ({ row }) => h('div', { class: 'text-left' }, row.getValue('number')),
     },
     {
         accessorKey: 'capacity',
         header: ({ column }) =>
-            h(
-                Button,
-                {
-                    variant: 'ghost',
-                    onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
-                },
-                () => ['Capacity', h(ArrowUpDown, { class: 'ml-2 h-4 w-4' })],
-            ),
-        cell: ({ row }) => h('div', { class: 'lowercase' }, row.getValue('capacity')),
+            h('div', { class: 'text-center' }, [
+                h(
+                    Button,
+                    {
+                        variant: 'ghost',
+                        onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
+                        class: 'mx-auto',
+                    },
+                    () => ['Capacity', h(ArrowUpDown, { class: 'ml-2 h-4 w-4' })],
+                ),
+            ]),
+        cell: ({ row }) => h('div', { class: 'text-center' }, row.getValue('capacity')),
     },
     {
-        accessorKey: 'Price',
-        header: 'Price',
-        cell: ({ row }) => h('div', { class: 'capitalize' }, row.getValue('price')),
+        accessorKey: 'price',
+        header: () => h('div', { class: 'text-center' }, 'Price'),
+        cell: ({ row }) => h('div', { class: 'text-center' }, `${(row.getValue('price') )}`)
     },
+
     {
         accessorKey: 'floor_id',
-        header: () => h('div', {}, 'Floor'),
-        cell: ({ row }) => h('div', row.getValue('floor_d')),
+        header: () => h('div', { class: 'text-center' }, 'Floor'),
+        cell: ({ row }) => h('div', { class: 'text-center' }, row.getValue('floor_id')),
     },
     {
-        accessorKey: 'creator',
+        accessorKey: 'created_by',
         header: () => h('div', { class: 'text-right' }, 'Creator'),
         cell: ({ row }) => h('div', { class: 'text-right' }, row.getValue('created_by')),
     },
     {
         id: 'actions',
-        enableHiding: false,
+        header: () => h('div', { class: 'text-center' }, 'Actions'),
         cell: ({ row }) => {
-            const createdBy = row.getValue('created_by');
-            const isOwnerOrAdmin = user.id === row.original.created_by || user.role === 'admin';
+            const room = row.original;
+            const isOwnerOrAdmin = user.id === room.created_by || user.role === 'admin';
 
-            return h('div', [
-                user.role === 'admin' && createdBy ? h('div', createdBy) : null,
-                isOwnerOrAdmin ? h(Button, { onClick: () => { alert('View details') } }, 'View') : null,
+            return h('div', { class: 'flex gap-2 flex-wrap justify-center' }, [
+                h(Button, {
+                    variant: 'outline',
+                    onClick: () => router.visit(route('rooms.show', room.id)),
+                    disabled: !isOwnerOrAdmin,
+                }, 'View'),
+
+                h(Button, {
+                    variant: 'outline',
+                    onClick: () => router.visit(route('rooms.edit', room.id)),
+                    disabled: !isOwnerOrAdmin,
+                }, 'Edit'),
+
+                h(Button, {
+                    variant: 'destructive',
+                    onClick: () => {
+                        handleDelete(room);
+                    },
+                    disabled: !isOwnerOrAdmin,
+                }, 'Delete'),
             ]);
         },
     },
@@ -93,33 +145,31 @@ const rowSelection = ref({});
 const expanded = ref<ExpandedState>({});
 
 const table = useVueTable({
-    data: props.data,
+    get data() {
+        return rooms.value;
+    },
     manualPagination: true,
     columns,
     getCoreRowModel: getCoreRowModel(),
 });
 </script>
-
 <template>
     <div class="w-full">
         <div class="flex items-center justify-between py-4">
-            <div class="flex items-center gap-2">
-                <Input
-                    class="max-w-sm"
-                    placeholder="Filter emails..."
-                    :model-value="table.getColumn('email')?.getFilterValue() as string"
-                    @update:model-value="table.getColumn('email')?.setFilterValue($event)"
-                />
-
-                <!-- زرار إنشاء غرفة -->
-                <Link :href="route('rooms.create')">
-                    <Button variant="default" class="flex items-center gap-2">
-                        <Plus class="w-4 h-4" />
-                        Create Room
-                    </Button>
-                </Link>
-            </div>
-
+            <Input
+                class="max-w-sm"
+                placeholder="Filter price..."
+                :model-value="table.getColumn('price')?.getFilterValue()"
+                @update:model-value="table.getColumn('price')?.setFilterValue($event)"
+            />
+            <Link :href="route('rooms.create')">
+                <Button class="flex items-center gap-2">
+                    <Plus class="h-4 w-4" />
+                    Add Room
+                </Button>
+            </Link>
+        </div>
+        <div class="flex items-center justify-between py-4">
             <DropdownMenu>
                 <DropdownMenuTrigger as-child>
                     <Button variant="outline">
@@ -134,7 +184,7 @@ const table = useVueTable({
                         :model-value="column.getIsVisible()"
                         @update:model-value="(value) => column.toggleVisibility(!!value)"
                     >
-                        {{ column.id }}
+                           {{ column.id }}
                     </DropdownMenuCheckboxItem>
                 </DropdownMenuContent>
             </DropdownMenu>
@@ -179,11 +229,6 @@ const table = useVueTable({
         <div class="flex items-center justify-end space-x-2 py-4">
             <div class="text-muted-foreground flex-1 text-sm">
                 {{ table.getFilteredSelectedRowModel().rows.length }} of {{ table.getFilteredRowModel().rows.length }} row(s) selected.
-            </div>
-            <div class="space-x-2">
-                <Link v-for="link in links" :key="link.label" :href="link.url ? link.url : '#'">
-                    <Button v-html="link.label" variant="outline" />
-                </Link>
             </div>
         </div>
     </div>

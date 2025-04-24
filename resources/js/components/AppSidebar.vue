@@ -54,10 +54,17 @@ const mainNavItems: NavItem[] = [
         icon: PersonStanding,
         allowedRoles: ['admin', 'manager', 'receptionist'],
     },
+
+    {
+        title: 'Manage Rooms',
+        href: '/rooms',
+        icon: PersonStanding,
+        allowedRoles: ['admin', 'manager'],
+    },
 ];
 
 const footerNavItems: NavItem[] = [
-    
+
 ];
 </script>
 

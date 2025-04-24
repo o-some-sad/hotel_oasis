@@ -1,67 +1,79 @@
 <script setup lang="ts">
-import { useForm } from '@inertiajs/vue3';
+import { Button } from '@/components/ui/button';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'; // استورد components بتوع الفورم عشان التنسيق الأفضل
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Button } from '@/components/ui/button';
+import { Link, useForm } from '@inertiajs/vue3'; // استورد Link عشان زر الرجوع
 
-defineProps<{ floors: { id: number; name: string }[] }>();
+const props = defineProps<{
+    floors: { id: number; name: string }[];
+}>();
 
 const form = useForm({
-    number: '',
     capacity: '',
     price: '',
     floor_id: '',
 });
 
 const submit = () => {
+    console.log(form);
     form.post(route('rooms.store'));
 };
 </script>
 
 <template>
-    <form @submit.prevent="submit" class="space-y-6 max-w-md mx-auto">
-        <!-- Room Number -->
-        <div>
-            <label for="number" class="block mb-1 text-sm font-medium">Room Number</label>
-            <Input id="number" type="text" v-model="form.number" />
-            <p v-if="form.errors.number" class="text-red-500 text-sm mt-1">{{ form.errors.number }}</p>
+    <div class="container mx-auto my-8 rounded-md p-6 shadow-md">
+        <div class="mb-6 flex items-center justify-between">
+            <h2 class="text-xl font-semibold">Create New Room</h2>
+            <Link :href="route('rooms.index')" class="rounded-md px-4 py-2 text-sm font-medium">
+                <Button>Back to List</Button>
+            </Link>
         </div>
+        <Form>
+            <form @submit.prevent="submit" class="space-y-6">
+                <FormField name="capacity">
+                    <FormItem>
+                        <FormLabel>Capacity</FormLabel>
+                        <FormControl>
+                            <Input type="number" v-model="form.capacity" class="rounded-md" />
+                        </FormControl>
+                        <FormMessage>{{ form.errors.capacity }}</FormMessage>
+                    </FormItem>
+                </FormField>
 
-        <!-- Capacity -->
-        <div>
-            <label for="capacity" class="block mb-1 text-sm font-medium">Capacity</label>
-            <Input id="capacity" type="number" v-model="form.capacity" />
-            <p v-if="form.errors.capacity" class="text-red-500 text-sm mt-1">{{ form.errors.capacity }}</p>
-        </div>
+                <FormField name="price">
+                    <FormItem>
+                        <FormLabel>Price (in dollars)</FormLabel>
+                        <FormControl>
+                            <Input type="number" v-model="form.price" class="rounded-md" />
+                        </FormControl>
+                        <FormMessage>{{ form.errors.price }}</FormMessage>
+                    </FormItem>
+                </FormField>
 
-        <!-- Price -->
-        <div>
-            <label for="price" class="block mb-1 text-sm font-medium">Price (in dollars)</label>
-            <Input id="price" type="number" v-model="form.price" />
-            <p v-if="form.errors.price" class="text-red-500 text-sm mt-1">{{ form.errors.price }}</p>
-        </div>
+                <FormField name="floor_id">
+                    <FormItem>
+                        <FormLabel>Floor</FormLabel>
+                        <FormControl>
+                            <Select v-model="form.floor_id" class="rounded-md">
+                                <SelectTrigger class="w-full">
+                                    <SelectValue placeholder="Select floor" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem v-for="floor in props.floors" :key="floor.id" :value="floor.id">
+                                        {{ floor.name }}
+                                    </SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </FormControl>
+                        <FormMessage>{{ form.errors.floor_id }}</FormMessage>
+                    </FormItem>
+                </FormField>
 
-        <!-- Floor -->
-        <div>
-            <label class="block mb-1 text-sm font-medium">Floor</label>
-            <Select v-model="form.floor_id">
-                <SelectTrigger>
-                    <SelectValue placeholder="Select floor" />
-                </SelectTrigger>
-                <SelectContent>
-                    <SelectItem
-                        v-for="floor in floors"
-                        :key="floor.id"
-                        :value="floor.id.toString()"
-                    >
-                        {{ floor.name }}
-                    </SelectItem>
-                </SelectContent>
-            </Select>
-            <p v-if="form.errors.floor_id" class="text-red-500 text-sm mt-1">{{ form.errors.floor_id }}</p>
-        </div>
-
-        <!-- Submit Button -->
-        <Button type="submit" :disabled="form.processing">Create Room</Button>
-    </form>
+                <div>
+                    <Button type="submit" :disabled="form.processing" class="w-full rounded-md py-2 font-semibold">Create Room</Button>
+                </div>
+            </form>
+        </Form>
+    </div>
 </template>

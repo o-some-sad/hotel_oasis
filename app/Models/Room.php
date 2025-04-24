@@ -16,10 +16,7 @@ class Room extends Model
      * @var list<string>
      */
     protected $fillable = [
-        'price',
-        'reserved',
-        'number',
-        'capacity',
+        'price', 'reserved', 'number', 'capacity', 'floor_id', 'created_by', 'updated_at', 'deleted_at',
     ];
 
     /**

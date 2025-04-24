@@ -55,10 +55,10 @@ Route::resource("approved-clients", ApprovedClientsController::class)->middlewar
 require __DIR__ . '/settings.php';
 require __DIR__ . '/auth.php';
 
+Route::get('/pending-approval/{id}/approve', [PendingApprovalController::class, 'approve'])->name('pending-approvals.approve');
 
-Route::get('/managers', [ManagerController::class, 'index'])
-    ->middleware('auth')
-    ->name('managers.index');
+Route::resource('managers', ManagerController::class)->middleware('auth');
+// ->where(['role' => 'admin']);
 
 Route::resource('receptionists', ManageReceptionistController::class)->middleware('auth');
 
@@ -75,6 +75,9 @@ Route::post('receptionists/{id}/unban', [ManageReceptionistController::class, 'u
 // Route::resource('clients', ClientController::class)->middleware('auth');
 
 // Ban/unban routes for clients
+//excel 
+Route::get('/clients/export', [ClientController::class, 'export'])->middleware('auth')->name('clients.export');
+
 Route::post('clients/{id}/ban', [ClientController::class, 'ban'])
     ->middleware('auth')
     ->name('clients.ban');
@@ -110,10 +113,19 @@ Route::post('/clients/{id}/ban', [ClientController::class, 'ban'])
 Route::post('/clients/{id}/unban', [ClientController::class, 'unban'])
     ->middleware('auth')
     ->name('clients.unban');
+// Show the dummy approve view
+Route::get('/clients/{id}/dummy-approve', [ClientController::class, 'dummyApproveView'])->name('clients.dummy-approve.view');
+
+// Approve action
+Route::post('/clients/{client}/approve', [ClientController::class, 'approve'])->name('clients.approve');
+
 
 Route::resource('pending-approvals', PendingApprovalController::class)->middleware('auth');
 
 Route::resource('receptionists', ManageReceptionistController::class)->middleware('auth');
 Route::resource('rooms', ManageRoomController::class)->middleware('auth');
 Route::resource('floors', FloorController::class)->middleware(['auth', 'verified']);
+
+
+
 

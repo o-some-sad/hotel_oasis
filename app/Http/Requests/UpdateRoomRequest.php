@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateRoomRequest extends FormRequest
 {
@@ -11,9 +12,8 @@ class UpdateRoomRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        $id = $this->route('rooms');
+       return true;
 
-        return in_array(auth()->user()->role, ['admin']) || auth()->id() === User::find($id)->created_by;
     }
 
     /**
@@ -23,11 +23,19 @@ class UpdateRoomRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
-            'number' => ['sometimes','required', 'string','min:4'],
-            'capacity' => ['sometimes','required', 'string'],
-            'price' => ['sometimes','required', 'string', 'min:6'],
-            'reserved' => ['sometimes','required', 'string'],
-        ];
+        try {
+            $id = optional($this->route('room'))->id ?? $this->route('room');
+            return [
+                'number' => ['sometimes', 'required', 'integer', Rule::unique('rooms', 'number')->ignore($id)],
+                'capacity' => ['sometimes', 'required', 'integer', 'min:1'],
+                'price' => ['sometimes', 'required', 'numeric', 'min:0'],
+                'reserved' => ['sometimes', 'required', 'boolean'],
+                'floor_id' => ['sometimes', 'required', 'integer', 'exists:floors,id'],
+            ];
+
+        }
+        catch (\Exception $e) {
+            dd($e->getMessage());
+        }
     }
 }

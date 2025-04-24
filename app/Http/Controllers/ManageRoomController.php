@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreRoomRequest;
 use App\Http\Requests\UpdateRoomRequest;
 use App\Http\Resources\Resources\RoomResource;
+use App\Models\Floor;
 use App\Models\Room;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -40,19 +41,43 @@ class ManageRoomController extends Controller
     public function create()
     {
         if(auth()->user()->role ==='admin' || auth()->user()->role ==='manager') {
-            return Inertia::render('manageRooms/Create');
+
+                $floors = Floor::select('id', 'name')->get();
+
+                return Inertia::render('manageRooms/Create', [
+                    'floors' => $floors
+                ]);
+
         }
         abort(403);
     }
 
 
-  public function store(StoreRoomRequest $request)
+    public function show($id)
+    {
+        if (auth()->user()->role === 'admin' || auth()->user()->role === 'manager') {
+            $room = Room::with(['creator', 'floor'])->where('id', $id)->first();
+
+            if (!$room) {
+                abort(404);
+            }
+
+            return Inertia::render('manageRooms/Show', [
+                'room' => new RoomResource($room),
+            ]);
+        }
+
+        abort(403);
+    }
+
+
+    public function store(StoreRoomRequest $request)
   {
     $request->authorize();
     $validated = $request->validated();
 
     $room = Room::create([
-      'number' => $validated['number'],
+      'number' => random_int(1000, 9999),
       'capacity' => $validated['capacity'],
       'price' => intval($validated['price'] * 100),
       'floor_id' => $validated['floor_id'] ,
@@ -65,36 +90,40 @@ class ManageRoomController extends Controller
   {
     $request->authorize();
     $room = Room::findOrFail($id);
+    $floors = Floor::all();
     return Inertia::render('manageRooms/Edit', [
       'room' => $room,
+        'floors' => $floors,
     ]);
   }
 
+    public function update(UpdateRoomRequest $request, $id)
+    {
+        $request->authorize();
+        $room = Room::findOrFail($id);
+        $validated = $request->validated();
+        $dirtyData = collect($validated)->filter(function ($value, $key) use ($room) {
+            return $room->$key != $value;
+        })->toArray();
+        $dirtyData['price'] =  $validated['price']*100;
+        try {
+            if (!empty($dirtyData)) {
+                $room->update($dirtyData);
+            }
 
-  public function update(UpdateRoomRequest $request, $id)
-  {
-    $request->authorize();
-
-    $room = Room::findOrFail($id);
-    $validated = $request->validated();
-
-    $dirtyData = collect($validated)->filter(function ($value, $key) use ($room) {
-      return $room->$key !== $value;
-    })->toArray();
-
-    if (!empty($dirtyData)) {
-      $room->update($dirtyData);
+        } catch (\Exception $e) {
+            return($e->getMessage());
+        }
+        return redirect()->route('rooms.index')->with('message', 'Room updated successfully.');
     }
 
-    return redirect()->route('rooms.index')->with('message', 'Room updated successfully.');
-  }
 
   public function destroy($id,UpdateRoomRequest $request)
   {
     $request->authorize();
     $room = Room::findOrFail($id);
 
-    if($room['reserved']=== false){
+    if($room['reserved']=== 0   ){
       $room->delete();
     }
     else{

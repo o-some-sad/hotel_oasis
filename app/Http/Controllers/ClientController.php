@@ -9,6 +9,10 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use App\Notifications\ClientApproved;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\ClientsExport;
+
 
 class ClientController extends Controller
 {
@@ -55,8 +59,8 @@ class ClientController extends Controller
         $validated['password'] = Hash::make($validated['password']);
         $validated['role'] = 'client';
         $validated['created_by'] = auth()->id();
-        $validated['is_approved'] = true;
-        $validated['approved_by'] = auth()->id();
+        $validated['is_approved'] = false;
+        $validated['approved_by'] = null;
 
         User::create($validated);
 
@@ -182,4 +186,38 @@ class ClientController extends Controller
 
         return redirect()->route('clients.show', compact("id"))->with('message', 'Client banned successfully.');
     }
-} 
+
+    public function approve(User $client)
+    {
+        try {
+            // if(auth()->user()->role !== 'admin' && auth()->user()->role !== 'manager') {
+            //     abort(403);
+            // }
+            $client->update(['is_approved' => true]);
+            $client->notify(new ClientApproved());
+            return redirect()->route('clients.index')->with('success', 'Client approved successfully.');
+        } catch(\Exception $e) {
+            \Log::error('Error approving client: ' . $e->getMessage());
+            return back()->with('error', 'Failed to approve client. Please try again.');
+        }
+    }
+    public function dummyApproveView($id)
+    {
+        $client = User::findOrFail($id);
+        return view('clients.dummy-approve', compact('client'));
+    }
+    public function export()
+    {
+         if(auth()->user()->role !== 'admin' && auth()->user()->role !== 'manager') {
+            abort(403);
+        }
+        return Excel::download(new ClientsExport, 'clients.xlsx');
+    } 
+
+}
+
+
+     
+
+
+

@@ -5,6 +5,7 @@ import { Head } from '@inertiajs/vue3';
 import { onMounted } from 'vue';
 
 const props = defineProps({
+    pagination: Object,
     data: Array,
     links: Array,
     message: String,
@@ -29,7 +30,10 @@ onMounted(() => {
             <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
                 <div class="overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6">
-                        <FloorsTable :data="data" :links="links" />
+                        <FloorsTable
+                            :data="props.pagination ? props.pagination.data : data"
+                            :links="props.pagination ? props.pagination.links : links"
+                        />
                     </div>
                 </div>
             </div>

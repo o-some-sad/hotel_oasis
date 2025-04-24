@@ -20,8 +20,13 @@ class PendingApprovalController extends Controller
 
     public function approve($id)
     {
-        $user = User::find($id);
-        $user->approved_by = auth()->user()->id;
-        $user->save();
+        User::where('id', $id)->update([
+            'approved_by' => auth()->id(),
+            'is_approved' => true,
+        ]);
+    
+        return redirect()->route('pending-approvals.index');
     }
+    
+  
 }
