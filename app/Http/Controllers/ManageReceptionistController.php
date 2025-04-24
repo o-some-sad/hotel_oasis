@@ -15,7 +15,7 @@ class ManageReceptionistController extends Controller
         if (auth()->user()->role === 'admin' || auth()->user()->role === 'manager') {
 
             $receptionists = User::where('role', 'receptionist')->with('manager')->paginate(10);
-            
+
             if ($receptionists->isEmpty()) {
                 return Inertia::render('manageReceptionists/Index', [
                     'pagination' => [
@@ -33,7 +33,7 @@ class ManageReceptionistController extends Controller
 
             // Transform the receptionists using the resource
             $resourceCollection = ReceptionistResource::collection($receptionists);
-            
+
             // Get the pagination information directly from Laravel's paginator
             return Inertia::render('manageReceptionists/Index', [
                 'pagination' => [
@@ -87,8 +87,8 @@ class ManageReceptionistController extends Controller
     {
         $request->authorize();
         $validated = $request->validated();
-        if ($request->hasFile('avatar_image')) {
-            $path = $request->file('avatar_image')->store('receptionists', 'public');
+        if ($request->hasFile('avatar_img')) {
+            $path = $request->file('avatar_img')->store('receptionists', 'public');
             $validated['avatar_img'] = $path;
         }
 
