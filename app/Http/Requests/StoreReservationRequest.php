@@ -24,6 +24,7 @@ class StoreReservationRequest extends FormRequest
         return [
             "room"=> "required",
             "duration"=> "required",
+            "accompany_number"=> "required|integer|min:0",
         ];
     }
 }

@@ -33,6 +33,10 @@ price_data: {
 
 */
 
+Route::get('/my-reservations/success', [ReservationController::class, 'success'])->middleware(['auth', EnsureUserHasRole::class .':client'])->name('payment.success');
+Route::get('/my-reservations/cancel', [ReservationController::class, 'cancel'])->middleware(['auth', EnsureUserHasRole::class .':client'])->name('payment.cancel');
+Route::get('/my-reservations/error', [ReservationController::class, 'error'])->middleware(['auth', EnsureUserHasRole::class .':client'])->name('payment.error');
+
 
 Route::resource('my-reservations', ReservationController::class)->middleware([
     'auth',

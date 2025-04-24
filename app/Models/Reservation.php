@@ -13,4 +13,9 @@ class Reservation extends Model
         'accompany_number',
         'paid_price',
     ];
+
+    public function room()
+{
+    return $this->belongsTo(Room::class);
+}
 }

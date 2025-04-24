@@ -1,18 +1,6 @@
+import { Reservation } from "@/types";
 
-export interface RowData {
-    id: number;
-    name: string;
-    email: string;
-    mobile: string;
-    national_id: string;
-    country: string;
-    gender: string;
-    avatar_img?: string;
-    is_approved: boolean;
-    created_at: string;
-    updated_at: string;
-    banned_at?: string;
-  }
+export type RowData = Reservation;
   
   export interface PaginationData {
     data: RowData[];

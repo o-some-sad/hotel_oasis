@@ -17,14 +17,14 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/ui/card'
-import { BreadcrumbItem } from '@/types';
+import { BreadcrumbItem, SharedData } from '@/types';
 import Button from '@/components/ui/button/Button.vue';
 import { ref } from 'vue';
 import RadioGroup from '@/components/ui/radio-group/RadioGroup.vue';
 import RadioGroupItem from '@/components/ui/radio-group/RadioGroupItem.vue';
 import Label from '@/components/ui/label/Label.vue';
 import { AcceptableValue } from 'reka-ui';
-import { router, Link, useForm } from '@inertiajs/vue3';
+import { router, Link, useForm, usePage } from '@inertiajs/vue3';
 import Slider from '@/components/ui/slider/Slider.vue';
 import NumberField from '@/components/ui/number-field/NumberField.vue';
 import NumberFieldContent from '@/components/ui/number-field/NumberFieldContent.vue';
@@ -52,27 +52,37 @@ const props = defineProps<{
     availableRooms: any[];
 }>()
 
-const currentCapacity = new URLSearchParams(window.location.search).get('capacity') || undefined
+const page = usePage<SharedData>();
+
+console.log(page.props.errors);
+
+
+let currentCapacity = new URLSearchParams(window.location.search).get('capacity') || undefined;
+
 
 const currentRoom = ref<any | null>(null)
 
 const form = useForm<{
     room: any | null,
-    duration: number
+    duration: number,
+    accompany_number: number
 }>({
     room: null,
-    duration: 2    
+    duration: 2,
+    accompany_number: 0
 })
 
 function selectCapacity(capacity: AcceptableValue) {
     router.visit(route('my-reservations.create', { capacity: capacity }))
 }
 
-function checkout(){
-    console.log(form.data());
-    
+async function checkout(){
     // const paymentLink = route('createPaymentLink')
-    form.post(route('my-reservations.store'))
+    const x = await form.post(route('my-reservations.store'), {
+        
+    })
+    console.log(x);
+    
 }
 
 </script>
@@ -84,7 +94,7 @@ function checkout(){
                 <CardHeader>
                     <CardTitle class="text-3xl">Step 1: How many people?</CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent v-if="availableCapacities.length">
                     <form>
                         <div class="grid items-center w-full gap-4">
                             <div class="flex flex-col space-y-1.5">
@@ -102,9 +112,17 @@ function checkout(){
                                         </SelectGroup>
                                     </SelectContent>
                                 </Select>
+                                <p>{{ page.props.errors.capacity }}</p>
                             </div>
                         </div>
                     </form>
+                </CardContent>
+                <CardContent v-else>
+                    <div class="flex flex-col items-center gap-4">
+                        <Equal class="h-16 w-16 fill-current text-black" />
+                        <h1 class="text-3xl font-bold">No rooms available</h1>
+                        <p class="text-lg">Please come back later</p>
+                    </div>
                 </CardContent>
             </Card>
             <Card class="" v-if="props.availableRooms.length">
@@ -133,11 +151,10 @@ function checkout(){
                                     <p> ${{ room.price }}</p>
                                     <p><i>Per night</i></p>
                                 </div>
-
                             </Label>
                         </RadioGroup>
-
                     </ScrollArea>
+                    <p>{{ page.props.errors.room }}</p>
                 </CardContent>
             </Card>
             <Card class="" v-if="currentRoom">
@@ -146,7 +163,7 @@ function checkout(){
                 </CardHeader>
                 <CardContent>
                     <div class="flex flex-col space-y-1.5">
-                        <Label for="duration">Duration</Label>
+                        <Label for="duration" class="text-xl font-bold">Duration</Label>
                         <div class="flex items-center gap-3">
                             <NumberField v-model="form.duration" id="duration" :default-value="2" :min="1" :max="30" class="w-[180px]">
                                 <NumberFieldContent>
@@ -165,6 +182,17 @@ function checkout(){
                                 ${{ currentRoom.price * form.duration }}
                             </span>
                         </div>
+                    </div>
+                    <p>{{ page.props.errors.duration }}</p>
+                    <div>
+                        <div class="text-xl font-bold">Accompanying Guests</div>
+                        <NumberField v-model="form.accompany_number" id="duration" :default-value="0" :min="0" :max="(+currentCapacity)-1" class="w-[180px]">
+                                <NumberFieldContent>
+                                    <NumberFieldDecrement />
+                                    <NumberFieldInput />
+                                    <NumberFieldIncrement />
+                                </NumberFieldContent>
+                            </NumberField>
                     </div>
                     <Separator class="my-4" />
                     <div class="flex gap-4 space-y-1.5">

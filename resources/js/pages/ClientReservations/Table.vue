@@ -11,71 +11,43 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { FlexRender, getCoreRowModel, useVueTable } from '@tanstack/vue-table';
 import { ArrowUpDown, ChevronDown, Plus } from 'lucide-vue-next';
 import { h, ref } from 'vue';
-import { PaginationData, RowData } from '. ';
+import { PaginationData, RowData } from '.';
 import { Link, usePage } from '@inertiajs/vue3';
 import { SharedData, User } from '@/types';
+import Badge from '@/components/ui/badge/Badge.vue';
 
 const props = defineProps<{
     data: RowData[],
     links: PaginationData['links']
 }>();
 
+const currencyFormatter = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+})
+
 const page = usePage<SharedData>();
 const user = page.props.auth.user as User;
-const columns: ColumnDef<RowData>[] = [
+const columns: ColumnDef<RowData>[] = [ 
     {
-        id: 'select',
-        header: ({ table }) =>
-            h(Checkbox, {
-                modelValue: table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && 'indeterminate'),
-                'onUpdate:modelValue': (value) => table.toggleAllPageRowsSelected(!!value),
-                ariaLabel: 'Select all',
-            }),
-        cell: ({ row }) =>
-            h(Checkbox, {
-                modelValue: row.getIsSelected(),
-                'onUpdate:modelValue': (value) => row.toggleSelected(!!value),
-                ariaLabel: 'Select row',
-            }),
-        enableSorting: false,
-        enableHiding: false,
+        accessorKey: 'room.number',
+        header: 'Room Number',
+        // cell: ({ row }) => h('div', { class: 'capitalize' }, row.getValue('room')),
     },
     {
-        accessorKey: 'name',
-        header: 'Name',
-        cell: ({ row }) => h('div', { class: 'capitalize' }, row.getValue('name')),
+        accessorKey: 'paid_price',
+        header: 'Paid Price',
+        cell: ({ row }) => h('div', { class: 'lowercase' }, currencyFormatter.format(row.getValue('paid_price') / 100)),
     },
     {
-        accessorKey: 'email',
-        header: ({ column }) => {
-            return h(
-                Button,
-                {
-                    variant: 'ghost',
-                    onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
-                },
-                () => ['Email', h(ArrowUpDown, { class: 'ml-2 h-4 w-4' })],
-            );
-        },
-        cell: ({ row }) => h('div', { class: 'lowercase' }, row.getValue('email')),
+        accessorKey: 'accompany_number',
+        header: 'Accompany Number',
     },
     {
-        accessorKey: 'mobile',
-        header: 'Mobile',
-        cell: ({ row }) => h('div', { class: 'capitalize' }, row.getValue('mobile')),
-    },
-    {
-        accessorKey: 'country',
-        header: () => h('div', {}, 'Country'),
+        accessorKey: 'payment_status',
+        header: "Payment Status",
         cell: ({ row }) => {
-            return h('div', row.getValue('country'));
-        },
-    },
-    {
-        accessorKey: 'gender',
-        header: ()=> h('div', { class: 'text-right' }, 'Gender'),
-        cell: ({ row }) => {
-            return h('div', { class: 'text-right' }, row.getValue('gender'));
+            return h(Badge, { class: 'text-right', variant: "outline" }, row.getValue('payment_status'));
         },
     },
     {
