@@ -84,13 +84,15 @@ const columns: ColumnDef<RowData>[] = [
     {
         id: 'actions',
         enableHiding: false,
+        header: ()=> h('div', { class: 'text-center' }, "Actions"),
         cell: ({ row }) => {                        
             return h('div', 
                 // h(ViewModal, { id: row.original.id }),
+                { class: 'text-center' },
                 h(Button, { 
                     
                     onClick(){
-                        router.get(route('approved-clients.show', { id: row.original.id}))
+                        router.get(route('clients.show', { id: row.original.id}))
                     }
                  }, "Details")
 

@@ -10,6 +10,9 @@ use Inertia\Inertia;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use App\Notifications\ClientApproved;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\ClientsExport;
+
 
 class ClientController extends Controller
 {
@@ -56,8 +59,8 @@ class ClientController extends Controller
         $validated['password'] = Hash::make($validated['password']);
         $validated['role'] = 'client';
         $validated['created_by'] = auth()->id();
-        $validated['is_approved'] = true;
-        $validated['approved_by'] = auth()->id();
+        $validated['is_approved'] = false;
+        $validated['approved_by'] = null;
 
         User::create($validated);
 
@@ -74,9 +77,11 @@ class ClientController extends Controller
         }
         
         $client = User::findOrFail($id);
+        $avatar_url = Storage::url($client->avatar_img);
         
         return Inertia::render('manageClients/Show', [
-            'client' => $client
+            'client' => $client,
+            'avatar_url'=> $avatar_url
         ]);
     }
 
@@ -162,7 +167,7 @@ class ClientController extends Controller
             'created_by_id' => auth()->id(),
         ]);
 
-        return redirect()->route('clients.index')->with('message', 'Client banned successfully.');
+        return redirect()->route('clients.show', compact("id"))->with('message', 'Client banned successfully.');
     }
 
     /**
@@ -179,8 +184,9 @@ class ClientController extends Controller
         // Unban the client
         $client->unban();
 
-        return redirect()->route('clients.index')->with('message', 'Client unbanned successfully.');
+        return redirect()->route('clients.show', compact("id"))->with('message', 'Client banned successfully.');
     }
+
     public function approve(User $client)
     {
         try {
@@ -203,3 +209,16 @@ class ClientController extends Controller
     
 
 }
+
+
+     public function export()
+    {
+         if(auth()->user()->role !== 'admin' && auth()->user()->role !== 'manager') {
+            abort(403);
+        }
+        return Excel::download(new ClientsExport, 'clients.xlsx');
+    } 
+
+
+
+} 

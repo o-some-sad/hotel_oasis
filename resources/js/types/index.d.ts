@@ -36,6 +36,11 @@ export interface User {
     created_at: string;
     updated_at: string;
     role: 'client' | 'manager' | 'receptionist' | 'admin';
+    gender: 'female' | 'male';
+    national_id: string;
+    mobile: string;
+    country: string;
+    banned_at: string | null;
 }
 
 export interface Floor {
@@ -50,3 +55,7 @@ export interface Floor {
 }
 
 export type BreadcrumbItemType = BreadcrumbItem;
+
+export interface Receptionist extends User {
+    role: "receptionist";
+}

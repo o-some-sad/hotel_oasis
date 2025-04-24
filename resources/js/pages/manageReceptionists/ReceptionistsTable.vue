@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { PaginationData } from '@/pages/manageRooms';
 import type { Receptionist } from '@/types';
 import { SharedData } from '@/types';
 import { Link, router, usePage } from '@inertiajs/vue3';
@@ -13,8 +14,11 @@ import { h, ref, watch } from 'vue';
 
 const props = defineProps<{
     data: Receptionist[];
-    links: any[];
+    links: PaginationData['links'];
 }>();
+
+console.log('Pagination links received:', props.links);
+console.log('Data received:', props.data);
 
 // Create a reactive local copy of the data
 const receptionists = ref<Receptionist[]>([...props.data]);
@@ -30,6 +34,13 @@ watch(
 
 const page = usePage<SharedData>();
 const user = page.props.auth.user;
+
+// Add states for sorting, filtering, visibility and row selection
+const sorting = ref([]);
+const columnFilters = ref([]);
+const columnVisibility = ref({});
+const rowSelection = ref({});
+
 const columns: ColumnDef<Receptionist>[] = [
     {
         id: 'select',
@@ -96,7 +107,7 @@ const columns: ColumnDef<Receptionist>[] = [
                                 receptionist.banned_at ? handleUnban(receptionist) : handleBan(receptionist);
                             }
                         },
-                        disabled: !isActionEnabled, // إذا كانت قيمة action هي false، يتم تعطيل الزر
+                        disabled: !isActionEnabled,
                     },
                     receptionist.banned_at ? 'Unban' : 'Ban',
                 ),
@@ -110,9 +121,22 @@ const columns: ColumnDef<Receptionist>[] = [
                                 handleUpdate(receptionist);
                             }
                         },
-                        disabled: !isActionEnabled, // إذا كانت قيمة action هي false، يتم تعطيل الزر
+                        disabled: !isActionEnabled,
                     },
                     'Edit',
+                ),
+                h(
+                    Button,
+                    {
+                        variant: 'outline',
+                        onClick: () => {
+                            if (isActionEnabled) {
+                                handleView(receptionist);
+                            }
+                        },
+                        disabled: !isActionEnabled,
+                    },
+                    'View',
                 ),
 
                 h(
@@ -124,7 +148,7 @@ const columns: ColumnDef<Receptionist>[] = [
                                 handleDelete(receptionist);
                             }
                         },
-                        disabled: !isActionEnabled, // إذا كانت قيمة action هي false، يتم تعطيل الزر
+                        disabled: !isActionEnabled,
                     },
                     'Delete',
                 ),
@@ -143,7 +167,6 @@ function handleBan(receptionist: Receptionist) {
         {
             preserveState: true,
             onSuccess: () => {
-                // Update the local state immediately
                 receptionist.banned_at = new Date().toISOString();
             },
         },
@@ -172,7 +195,6 @@ function handleDelete(receptionist: Receptionist) {
         router.delete(route('receptionists.destroy', { receptionist: receptionist.id }), {
             preserveState: true,
             onSuccess: () => {
-                // Remove the deleted receptionist from our reactive data array
                 receptionists.value = receptionists.value.filter((r) => r.id !== receptionist.id);
             },
         });
@@ -182,6 +204,9 @@ function handleDelete(receptionist: Receptionist) {
 function handleUpdate(receptionist: Receptionist) {
     router.get(route('receptionists.edit', { receptionist: receptionist.id }));
 }
+function handleView(receptionist: Receptionist) {
+    router.get(route('receptionists.show', { receptionist: receptionist.id }));
+}
 
 const table = useVueTable({
     get data() {
@@ -190,6 +215,27 @@ const table = useVueTable({
     columns,
     getCoreRowModel: getCoreRowModel(),
     manualPagination: true,
+    state: {
+        get rowSelection() {
+            return rowSelection.value;
+        },
+        get columnFilters() {
+            return columnFilters.value;
+        },
+        get columnVisibility() {
+            return columnVisibility.value;
+        },
+        get sorting() {
+            return sorting.value;
+        },
+    },
+    onRowSelectionChange: (updater) => {
+        if (typeof updater === 'function') {
+            rowSelection.value = updater(rowSelection.value);
+        } else {
+            rowSelection.value = updater;
+        }
+    },
 });
 </script>
 
@@ -233,10 +279,16 @@ const table = useVueTable({
             </Table>
         </div>
 
-        <div class="flex justify-end space-x-2 py-4">
-            <Link v-for="link in links" :key="link.label" :href="link.url || '#'">
-                <Button v-html="link.label" variant="outline" />
-            </Link>
+        <div class="flex items-center justify-end space-x-2 py-4">
+            <div class="text-muted-foreground flex-1 text-sm">
+                {{ table.getFilteredSelectedRowModel().rows.length }} of {{ table.getFilteredRowModel().rows.length }}
+                row(s) selected.
+            </div>
+            <div class="space-x-2" v-if="links && links.length">
+                <Link v-for="link in links" :key="link.label" :href="link.url ? link.url : '#'" :class="{ 'pointer-events-none': !link.url }">
+                    <Button v-html="link.label" variant="outline" />
+                </Link>
+            </div>
         </div>
     </div>
 </template>

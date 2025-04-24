@@ -14,19 +14,37 @@ class ManageReceptionistController extends Controller
     public function index() {
         if (auth()->user()->role === 'admin' || auth()->user()->role === 'manager') {
 
-            $receptionists = User::where('role', 'receptionist')->with('manager')->get();
+            $receptionists = User::where('role', 'receptionist')->with('manager')->paginate(10);
+            
             if ($receptionists->isEmpty()) {
                 return Inertia::render('manageReceptionists/Index', [
                     'pagination' => [
                         'data' => [],
                         'links' => [],
+                        'current_page' => 1,
+                        'last_page' => 1,
+                        'from' => null,
+                        'to' => null,
+                        'total' => 0,
                     ],
                     'message' => 'There are no receptionist yet.',
                 ]);
             }
 
+            // Transform the receptionists using the resource
+            $resourceCollection = ReceptionistResource::collection($receptionists);
+            
+            // Get the pagination information directly from Laravel's paginator
             return Inertia::render('manageReceptionists/Index', [
-                'pagination' => ReceptionistResource::collection($receptionists)->response()->getData(true),
+                'pagination' => [
+                    'data' => $resourceCollection->toArray(request()),
+                    'links' => $receptionists->toArray()['links'],
+                    'current_page' => $receptionists->currentPage(),
+                    'last_page' => $receptionists->lastPage(),
+                    'from' => $receptionists->firstItem(),
+                    'to' => $receptionists->lastItem(),
+                    'total' => $receptionists->total(),
+                ],
             ]);
         }
         abort(403);
@@ -42,11 +60,33 @@ class ManageReceptionistController extends Controller
     }
 
 
+    public function show($id)
+    {
+        if (auth()->user()->role === 'admin' || auth()->user()->role === 'manager') {
+            $receptionist = User::where('id', $id)
+                ->where('role', 'receptionist')
+                ->with('manager')
+                ->first();
+
+            if (!$receptionist) {
+                abort(404);
+            }
+
+            return Inertia::render('manageReceptionists/Show', [
+                'receptionist' => $receptionist,
+            ]);
+
+
+        }
+
+        abort(403);
+    }
+
+
     public function store(StoreReceiptionistRequest $request)
     {
         $request->authorize();
         $validated = $request->validated();
-
         if ($request->hasFile('avatar_image')) {
             $path = $request->file('avatar_image')->store('receptionists', 'public');
             $validated['avatar_img'] = $path;
@@ -65,6 +105,7 @@ class ManageReceptionistController extends Controller
             'mobile' => $validated['mobile'],
             'country' => $validated['country'],
             'role' => 'receptionist',
+            'approved_by' => auth()->id()
 
         ]);
 
@@ -108,6 +149,8 @@ class ManageReceptionistController extends Controller
 
             $path = $request->file('avatar_img')->store('receptionists', 'public');
             $validated['avatar_img'] = $path;
+        }else{
+            unset( $validated['avatar_img'] );
         }
 
         $dirtyData = collect($validated)->filter(function ($value, $key) use ($receptionist) {

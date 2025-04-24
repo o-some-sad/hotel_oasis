@@ -23,7 +23,6 @@ class StoreRoomRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'number' => ['required', 'digits:4', 'unique:rooms,number'],
             'capacity' => ['required', 'integer'],
             'price' => ['required', 'numeric'],
             'floor_id' => ['required', 'exists:floors,id'],
