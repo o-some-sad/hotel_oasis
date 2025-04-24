@@ -75,27 +75,28 @@ const columns: ColumnDef<RowData>[] = [
     },
     {
         accessorKey: 'gender',
-        header: ()=> h('div', { class: 'text-right' }, 'Gender'),
+        header: ()=> h('div', { class: 'text-center' }, 'Gender'),
         cell: ({ row }) => {
-            return h('div', { class: 'text-right' }, row.getValue('gender'));
+            return h('div', { class: 'text-center' }, row.getValue('gender'));
         },
     },
     {
-        id: 'actions',
-        enableHiding: false,
-        cell: ({ row }) => {
-            return h('h1', 
-                h(Button, {
-                    onClick: () => {
-                        
-                        
-                    }
-                }, "View")
-
-
-            );
+  id: 'actions',
+  enableHiding: false,
+  cell: ({ row }) => {
+    const user = row.original;
+    return h('div', { class: 'text-center' }, [
+      h(Button, {
+        onClick: () => {
+          window.location.href = `/pending-approval/${user.id}/approve`;
         },
-    },
+        variant: 'success'
+      }, 'Approve'),
+      
+    ]);
+  },
+}
+
 ];
 
 const sorting = ref<SortingState>([]);
