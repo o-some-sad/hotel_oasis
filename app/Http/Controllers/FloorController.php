@@ -128,6 +128,10 @@ class FloorController extends Controller
             abort(403, 'Unauthorized action.');
         }
         
+        // First force delete all rooms associated with this floor
+        $floor->rooms()->forceDelete();
+        
+        // Now delete the floor
         $floor->delete();
         
         return redirect()->route('floors.index')->with('success', 'Floor deleted successfully.');
