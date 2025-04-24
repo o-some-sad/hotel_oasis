@@ -206,12 +206,7 @@ class ClientController extends Controller
         $client = User::findOrFail($id);
         return view('clients.dummy-approve', compact('client'));
     }
-    
-
-}
-
-
-     public function export()
+    public function export()
     {
          if(auth()->user()->role !== 'admin' && auth()->user()->role !== 'manager') {
             abort(403);
@@ -219,6 +214,10 @@ class ClientController extends Controller
         return Excel::download(new ClientsExport, 'clients.xlsx');
     } 
 
+}
 
 
-} 
+     
+
+
+
