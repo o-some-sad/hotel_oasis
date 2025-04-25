@@ -7,6 +7,8 @@ import { Label } from '@/components/ui/label';
 import AuthBase from '@/layouts/AuthLayout.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import { LoaderCircle } from 'lucide-vue-next';
+import {computed, onMounted, ref} from "vue";
+import axios from "axios";
 
 const form = useForm({
     name: '',
@@ -20,6 +22,53 @@ const form = useForm({
     avatar_img: null,
 });
 
+
+const countrySearch = ref('');
+const showCountryDropdown = ref(false);
+const countries = ref([]);
+const selectedCountry = ref(null);
+
+// Fetch all countries when component mounts
+onMounted(async () => {
+    try {
+        const response = await axios.get('/api/countries');
+        countries.value = response.data;
+    } catch (error) {
+        console.error('Error fetching countries:', error);
+    }
+});
+// Filter countries based on search input
+const filteredCountries = computed(() => {
+    if (!countrySearch.value) return countries.value;
+
+    const searchTerm = countrySearch.value.toLowerCase();
+    return countries.value.filter((country) => country.name.toLowerCase().includes(searchTerm));
+});
+
+// Close dropdown when clicking outside
+const closeDropdown = (e) => {
+    if (!e.target.closest('#country_search')) {
+        showCountryDropdown.value = false;
+    }
+};
+
+// Add event listener to close dropdown when clicking outside
+onMounted(() => {
+    document.addEventListener('click', closeDropdown);
+});
+
+// Select a country
+const selectCountry = (country) => {
+    selectedCountry.value = country;
+    form.country = country.iso_alpha_3; // Store the ISO alpha-3 code as the value
+    countrySearch.value = country.name; // Display the country name in the input
+    showCountryDropdown.value = false;
+};
+
+// Filter countries on input
+const filterCountries = () => {
+    showCountryDropdown.value = true;
+};
 
 const submit = () => {
     form.post(route('register'), {
@@ -88,11 +137,41 @@ const submit = () => {
                 <InputError :message="form.errors.mobile" />
             </div>
 
-            <div class="grid gap-2">
-                <Label for="country">Country</Label>
-                <Input id="country" type="text" required v-model="form.country" placeholder="Country" />
-                <InputError :message="form.errors.country" />
-            </div>
+                <div>
+                    <Label for="country">Country</Label>
+                    <div class="relative">
+                        <Input
+                            id="country_search"
+                            v-model="countrySearch"
+                            type="text"
+                            placeholder="Search for a country..."
+                            @input="filterCountries"
+                            @focus="showCountryDropdown = true"
+                            class="mt-1 block w-full"
+                            required
+                        />
+                        <div
+                            v-if="showCountryDropdown && filteredCountries.length > 0"
+                            class="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-md border bg-white shadow-lg dark:bg-zinc-800"
+                        >
+                            <div class="py-1">
+                                <button
+                                    v-for="country in filteredCountries"
+                                    :key="country.id"
+                                    @click="selectCountry(country)"
+                                    class="w-full px-4 py-2 text-left text-sm hover:bg-zinc-100 focus:bg-zinc-100 focus:outline-none dark:hover:bg-zinc-700 dark:focus:bg-zinc-700"
+                                    type="button"
+                                >
+                                    {{ country.name }}
+                                </button>
+                            </div>
+                        </div>
+                        <div v-if="selectedCountry" class="mt-2 text-sm">
+                            Selected: <span class="font-medium">{{ selectedCountry.name }}</span>
+                        </div>
+                    </div>
+                    <InputError :message="form.errors.country" class="mt-2" />
+                </div>
 
             <div class="grid gap-2">
                 <Label for="gender">Gender</Label>
