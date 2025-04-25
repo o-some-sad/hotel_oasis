@@ -13,12 +13,13 @@ use Cog\Contracts\Ban\Bannable as BannableInterface;
 use Cog\Laravel\Ban\Traits\Bannable;
 use App\Observers\ClientObserver;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Laravel\Sanctum\HasApiTokens;
 
 #[ObservedBy([ClientObserver::class])]
     class User extends Authenticatable implements BannableInterface
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, SoftDeletes, Bannable;
+    use HasFactory, Notifiable, SoftDeletes, Bannable, HasApiTokens;
 
     /**
      * The attributes that are mass assignable.

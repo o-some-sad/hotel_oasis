@@ -20,6 +20,11 @@ class EnsureUserHasRole
         if(in_array($currentRole, $roles)){
             return $next($request);
         }
+
+        if ($currentRole === 'client' && auth()->user()->approved_by === null) {
+           
+            abort(403, "This account is not approved yet");
+        }
         abort(403, "You don't have permission to access this page");
     }
 }
