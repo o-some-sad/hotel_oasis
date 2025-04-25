@@ -31,7 +31,7 @@ import NumberFieldContent from '@/components/ui/number-field/NumberFieldContent.
 import NumberFieldDecrement from '@/components/ui/number-field/NumberFieldDecrement.vue';
 import NumberFieldInput from '@/components/ui/number-field/NumberFieldInput.vue';
 import NumberFieldIncrement from '@/components/ui/number-field/NumberFieldIncrement.vue';
-import { Equal, X } from 'lucide-vue-next';
+import { Equal, EqualNot, Frown, X } from 'lucide-vue-next';
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Dashboard',
@@ -59,6 +59,11 @@ console.log(page.props.errors);
 
 let currentCapacity = new URLSearchParams(window.location.search).get('capacity') || undefined;
 
+const currencyFormatter = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+})
+
 
 const currentRoom = ref<any | null>(null)
 
@@ -78,10 +83,7 @@ function selectCapacity(capacity: AcceptableValue) {
 
 async function checkout(){
     // const paymentLink = route('createPaymentLink')
-    const x = await form.post(route('my-reservations.store'), {
-        
-    })
-    console.log(x);
+    form.post(route('my-reservations.store'))
     
 }
 
@@ -92,7 +94,8 @@ async function checkout(){
         <div class="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
             <Card class="">
                 <CardHeader>
-                    <CardTitle class="text-3xl">Step 1: How many people?</CardTitle>
+                    <CardTitle class="text-3xl" v-if="currentCapacity">Step 1: How many people?</CardTitle>
+                    <CardTitle class="text-3xl" v-else>Oops</CardTitle>
                 </CardHeader>
                 <CardContent v-if="availableCapacities.length">
                     <form>
@@ -119,7 +122,7 @@ async function checkout(){
                 </CardContent>
                 <CardContent v-else>
                     <div class="flex flex-col items-center gap-4">
-                        <Equal class="h-16 w-16 fill-current text-black" />
+                        <Frown class="h-16 w-16" />
                         <h1 class="text-3xl font-bold">No rooms available</h1>
                         <p class="text-lg">Please come back later</p>
                     </div>
@@ -148,7 +151,7 @@ async function checkout(){
                                     </p>
                                 </div>
                                 <div>
-                                    <p> ${{ room.price }}</p>
+                                    <p> {{ currencyFormatter.format(room.price / 100) }}</p>
                                     <p><i>Per night</i></p>
                                 </div>
                             </Label>
@@ -175,18 +178,19 @@ async function checkout(){
                             Day(s)
                             <X />
                             <span>
-                                ${{ currentRoom.price }}
+                                {{ currencyFormatter.format(currentRoom.price / 100) }}
                             </span>
                             <Equal />
                             <span class="font-bold">
-                                ${{ currentRoom.price * form.duration }}
+                                {{ currencyFormatter.format((currentRoom.price / 100) * form.duration) }}
                             </span>
                         </div>
                     </div>
                     <p>{{ page.props.errors.duration }}</p>
                     <div>
                         <div class="text-xl font-bold">Accompanying Guests</div>
-                        <NumberField v-model="form.accompany_number" id="duration" :default-value="0" :min="0" :max="(+currentCapacity)-1" class="w-[180px]">
+                        <!-- IT'S OK, I KNOW THAT currentCapacity IS A NUMBER -->
+                        <NumberField v-model="form.accompany_number" id="duration" :default-value="0" :min="0" :max="(+(currentCapacity as unknown as number))-1" class="w-[180px]">
                                 <NumberFieldContent>
                                     <NumberFieldDecrement />
                                     <NumberFieldInput />
