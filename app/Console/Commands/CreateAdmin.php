@@ -4,6 +4,9 @@
     use App\Models\User;
     use Illuminate\Support\Facades\Hash;
     use Illuminate\Support\Facades\Validator;
+    use Illuminate\Support\Facades\Storage;
+    use Illuminate\Support\Str;
+    use Illuminate\Support\Facades\Http;
     class CreateAdmin extends Command
     {
         /**
@@ -63,6 +66,11 @@
             } elseif ($data['gender'] === 'female') {
                 $avatar_img = 'https://www.shutterstock.com/image-vector/business-woman-icon-avatar-symbol-600nw-790518412.jpg';
             }
+            $imageContent = Http::get($avatar_img)->body();
+            $filename = 'receptionists/' . Str::uuid() . '.jpg';
+            Storage::disk('public')->put($filename, $imageContent);
+            $path = $filename;
+
 
             $user = User::create([
                 'name' => $data['name'],
@@ -71,7 +79,7 @@
                 'mobile'=>$data['mobile'],
                 'gender' => $data['gender'],
                 'national_id'=>$data['national_id'],
-                'avatar_img' => $avatar_img,
+                'avatar_img' => $path,
                 'role' => 'admin',
                 'country' => $data['country'],
             ]);
