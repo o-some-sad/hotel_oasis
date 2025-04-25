@@ -87,6 +87,7 @@ class ManageReceptionistController extends Controller
     {
         $request->authorize();
         $validated = $request->validated();
+
         if ($request->hasFile('avatar_img')) {
             $path = $request->file('avatar_img')->store('receptionists', 'public');
             $validated['avatar_img'] = $path;
@@ -94,23 +95,22 @@ class ManageReceptionistController extends Controller
 
         $validated['password'] = Hash::make($validated['password']);
 
-        $user = User::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'password' => $validated['password'],
-            'national_id' => $validated['national_id'],
-            'avatar_img' => $validated['avatar_img'] ,
-            'gender' => $validated['gender']  ,
-            'created_by' => auth()->id(),
-            'mobile' => $validated['mobile'],
-            'country' => $validated['country'],
-            'role' => 'receptionist',
-            'approved_by' => auth()->id()
-
-        ]);
-
+            $user = User::create([
+                'name' => $validated['name'],
+                'email' => $validated['email'],
+                'password' => $validated['password'],
+                'national_id' => $validated['national_id'],
+                'avatar_img' => $validated['avatar_img'],
+                'gender' => $validated['gender'],
+                'created_by' => auth()->id(),
+                'mobile' => $validated['mobile'],
+                'country' => $validated['country'],
+                'role' => 'receptionist',
+                'approved_by' => auth()->id(),
+            ]);
         return Inertia::location(route('receptionists.index'));
     }
+
 
 
     public function edit($id)
@@ -149,8 +149,8 @@ class ManageReceptionistController extends Controller
 
             $path = $request->file('avatar_img')->store('receptionists', 'public');
             $validated['avatar_img'] = $path;
-        }else{
-            unset( $validated['avatar_img'] );
+        } else {
+            unset($validated['avatar_img']);
         }
 
         $dirtyData = collect($validated)->filter(function ($value, $key) use ($receptionist) {
@@ -163,6 +163,7 @@ class ManageReceptionistController extends Controller
 
         return redirect()->route('receptionists.index')->with('message', 'Receptionist updated successfully.');
     }
+
 
     public function destroy($id,UpdateReceptionistRequest $request)
     {

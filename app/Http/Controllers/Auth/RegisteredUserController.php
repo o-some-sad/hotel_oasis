@@ -57,6 +57,7 @@ class RegisteredUserController extends Controller
             'role'=>'client',
             'is_approved'=>false,
             'last_login_in'=>now(),
+
         ]);
 
         event(new Registered($user));
