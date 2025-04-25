@@ -14,6 +14,8 @@ const props = defineProps<{
         floor_id: number;
     };
     floors: { id: number; name: string }[];
+    errors: Object,
+
 }>();
 
 const form = useForm({
@@ -48,7 +50,7 @@ const submit = () => {
                         <FormControl>
                             <Input type="text" v-model="form.number" disabled class="rounded-md" />
                         </FormControl>
-                        <FormMessage>{{ form.errors.number }}</FormMessage>
+                        <p>{{ props.errors.number }}</p>
                     </FormItem>
                 </FormField>
 
@@ -58,7 +60,7 @@ const submit = () => {
                         <FormControl>
                             <Input type="number" v-model="form.capacity" class="rounded-md" />
                         </FormControl>
-                        <FormMessage>{{ form.errors.capacity }}</FormMessage>
+                        <p v-if="props.errors.capacity" class="text-sm text-red-500 mt-1">{{ props.errors.capacity }}</p>
                     </FormItem>
                 </FormField>
 
@@ -68,7 +70,7 @@ const submit = () => {
                         <FormControl>
                             <Input type="number" step="0.1" v-model="form.price" class="rounded-md" />
                         </FormControl>
-                        <FormMessage>{{ form.errors.price }}</FormMessage>
+                        <p v-if="props.errors.price" class="text-sm text-red-500 mt-1">{{ props.errors.price }}</p>
                     </FormItem>
                 </FormField>
 
@@ -87,7 +89,7 @@ const submit = () => {
                                 </SelectContent>
                             </Select>
                         </FormControl>
-                        <FormMessage>{{ form.errors.floor_id }}</FormMessage>
+                        <p v-if="props.errors.floor_id" class="text-sm text-red-500 mt-1">{{ props.errors.floor_id }}</p>
                     </FormItem>
                 </FormField>
 

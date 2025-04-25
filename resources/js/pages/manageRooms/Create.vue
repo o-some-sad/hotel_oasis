@@ -7,6 +7,8 @@ import { Link, useForm } from '@inertiajs/vue3'; // استورد Link عشان �
 
 const props = defineProps<{
     floors: { id: number; name: string }[];
+    errors: Object,
+
 }>();
 
 const form = useForm({
@@ -16,7 +18,6 @@ const form = useForm({
 });
 
 const submit = () => {
-    console.log(form);
     form.post(route('rooms.store'));
 };
 </script>
@@ -37,7 +38,7 @@ const submit = () => {
                         <FormControl>
                             <Input type="number" v-model="form.capacity" class="rounded-md" />
                         </FormControl>
-                        <FormMessage>{{ form.errors.capacity }}</FormMessage>
+                        <p v-if="props.errors.capacity" class="text-sm text-red-500 mt-1">{{ props.errors.capacity }}</p>
                     </FormItem>
                 </FormField>
 
@@ -47,7 +48,7 @@ const submit = () => {
                         <FormControl>
                             <Input type="number" v-model="form.price" class="rounded-md" />
                         </FormControl>
-                        <FormMessage>{{ form.errors.price }}</FormMessage>
+                        <p v-if="props.errors.price" class="text-sm text-red-500 mt-1">{{ props.errors.price }}</p>
                     </FormItem>
                 </FormField>
 
@@ -66,7 +67,7 @@ const submit = () => {
                                 </SelectContent>
                             </Select>
                         </FormControl>
-                        <FormMessage>{{ form.errors.floor_id }}</FormMessage>
+                        <p v-if="props.errors.floor_id" class="text-sm text-red-500 mt-1">{{ props.errors.floor_id }}</p>
                     </FormItem>
                 </FormField>
 
