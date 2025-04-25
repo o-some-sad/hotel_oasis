@@ -1,0 +1,219 @@
+<script setup lang="ts">
+import InputError from '@/components/InputError.vue';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import AppLayout from '@/layouts/AppLayout.vue';
+import { type BreadcrumbItem } from '@/types';
+import { Head, Link, useForm } from '@inertiajs/vue3';
+import axios from 'axios';
+import { ChevronDown } from 'lucide-vue-next';
+import { computed, onMounted, ref } from 'vue';
+
+const breadcrumbs: BreadcrumbItem[] = [
+    {
+        title: 'Dashboard',
+        href: '/dashboard',
+    },
+    {
+        title: 'Manage Managers',
+        href: '/managers',
+    },
+    {
+        title: 'Create Manager',
+        href: '/managers/create',
+    },
+];
+
+// Form state
+const form = useForm({
+    name: '',
+    email: '',
+    password: '',
+    password_confirmation: '',
+    national_id: '',
+    mobile: '',
+    country: '',
+    gender: 'male', // Set a default value to ensure it's always selected
+    avatar_img: null,
+});
+
+// Country selection
+const countrySearch = ref('');
+const showCountryDropdown = ref(false);
+const countries = ref([]);
+const selectedCountry = ref(null);
+
+// Fetch countries on component mount
+onMounted(async () => {
+    try {
+        const response = await axios.get('https://restcountries.com/v3.1/all?fields=name,cca2');
+        countries.value = response.data
+            .map((country) => ({
+                name: country.name.common,
+                code: country.cca2,
+            }))
+            .sort((a, b) => a.name.localeCompare(b.name));
+    } catch (error) {
+        console.error('Error fetching countries:', error);
+    }
+});
+
+const filteredCountries = computed(() => {
+    return countries.value.filter((country) => country.name.toLowerCase().includes(countrySearch.value.toLowerCase()));
+});
+
+function selectCountry(country) {
+    selectedCountry.value = country;
+    form.country = country.code;
+    showCountryDropdown.value = false;
+}
+
+// Handle avatar image
+function handleFileChange(event) {
+    form.avatar_img = event.target.files[0];
+}
+
+// Submit form
+function submit() {
+    form.post(route('managers.store'), {
+        preserveScroll: true,
+        onSuccess: () => {
+            form.reset();
+        },
+    });
+}
+</script>
+
+<template>
+    <div>
+        <Head title="Create Manager" />
+        <AppLayout :breadcrumbs="breadcrumbs">
+            <div class="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
+                <div class="flex items-center justify-between">
+                    <h1 class="text-2xl font-bold">Create Manager</h1>
+                    <Link :href="route('managers.index')">
+                        <Button variant="outline">Back to Managers</Button>
+                    </Link>
+                </div>
+                <div class="rounded-md border bg-white p-6 shadow-sm dark:bg-neutral-900">
+                    <form @submit.prevent="submit" class="space-y-6">
+                        <!-- Name -->
+                        <div>
+                            <Label for="name">Name</Label>
+                            <Input id="name" v-model="form.name" type="text" class="mt-1 block w-full" required autofocus />
+                            <InputError class="mt-2" :message="form.errors.name" />
+                        </div>
+
+                        <!-- Email -->
+                        <div>
+                            <Label for="email">Email</Label>
+                            <Input id="email" v-model="form.email" type="email" class="mt-1 block w-full" required />
+                            <InputError class="mt-2" :message="form.errors.email" />
+                        </div>
+
+                        <!-- Password -->
+                        <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+                            <div>
+                                <Label for="password">Password</Label>
+                                <Input id="password" v-model="form.password" type="password" class="mt-1 block w-full" required />
+                                <InputError class="mt-2" :message="form.errors.password" />
+                            </div>
+
+                            <div>
+                                <Label for="password_confirmation">Confirm Password</Label>
+                                <Input
+                                    id="password_confirmation"
+                                    v-model="form.password_confirmation"
+                                    type="password"
+                                    class="mt-1 block w-full"
+                                    required
+                                />
+                            </div>
+                        </div>
+
+                        <!-- National ID -->
+                        <div>
+                            <Label for="national_id">National ID</Label>
+                            <Input id="national_id" v-model="form.national_id" type="text" class="mt-1 block w-full" required />
+                            <InputError class="mt-2" :message="form.errors.national_id" />
+                        </div>
+
+                        <!-- Mobile -->
+                        <div>
+                            <Label for="mobile">Mobile</Label>
+                            <Input id="mobile" v-model="form.mobile" type="text" class="mt-1 block w-full" required />
+                            <InputError class="mt-2" :message="form.errors.mobile" />
+                        </div>
+
+                        <!-- Country -->
+                        <div>
+                            <Label for="country">Country</Label>
+                            <div class="relative">
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    class="mt-1 flex w-full justify-between"
+                                    @click="showCountryDropdown = !showCountryDropdown"
+                                >
+                                    <span>{{ selectedCountry ? selectedCountry.name : 'Select country' }}</span>
+                                    <ChevronDown class="h-4 w-4" />
+                                </Button>
+                                <div
+                                    v-if="showCountryDropdown"
+                                    class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md border bg-white py-1 shadow-lg dark:bg-neutral-900"
+                                >
+                                    <Input
+                                        v-model="countrySearch"
+                                        placeholder="Search countries..."
+                                        class="mx-2 my-2 w-[calc(100%-1rem)]"
+                                        @click.stop
+                                    />
+                                    <div class="mt-1 max-h-40 overflow-y-auto">
+                                        <div
+                                            v-for="country in filteredCountries"
+                                            :key="country.code"
+                                            class="cursor-pointer px-4 py-2 hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                                            @click="selectCountry(country)"
+                                        >
+                                            {{ country.name }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <InputError class="mt-2" :message="form.errors.country" />
+                        </div>
+
+                        <!-- Gender -->
+                        <div>
+                            <Label for="gender">Gender</Label>
+                            <div class="mt-1 flex gap-4">
+                                <div class="flex items-center">
+                                    <Input id="male" v-model="form.gender" type="radio" name="gender" value="male" class="h-4 w-4" />
+                                    <label for="male" class="ml-2">Male</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <Input id="female" v-model="form.gender" type="radio" name="gender" value="female" class="h-4 w-4" />
+                                    <label for="female" class="ml-2">Female</label>
+                                </div>
+                            </div>
+                            <InputError class="mt-2" :message="form.errors.gender" />
+                        </div>
+
+                        <!-- Avatar Image -->
+                        <div>
+                            <Label for="avatar_img">Avatar Image</Label>
+                            <Input id="avatar_img" type="file" @change="handleFileChange" class="mt-1 block w-full" accept="image/*" />
+                            <InputError class="mt-2" :message="form.errors.avatar_img" />
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="flex items-center justify-end">
+                            <Button type="submit" :disabled="form.processing" :class="{ 'opacity-50': form.processing }"> Create Manager </Button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </AppLayout>
+    </div>
+</template>
