@@ -61,8 +61,7 @@ require __DIR__ . '/auth.php';
 
 Route::get('/pending-approval/{id}/approve', [PendingApprovalController::class, 'approve'])->name('pending-approvals.approve');
 
-Route::resource('managers', ManagerController::class)->middleware('auth');
-// ->where(['role' => 'admin']);
+Route::resource('managers', ManagerController::class)->middleware('auth')->where(['role' => 'admin']);
 
 Route::resource('receptionists', ManageReceptionistController::class)->middleware('auth');
 

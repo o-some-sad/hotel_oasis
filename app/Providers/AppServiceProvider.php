@@ -14,7 +14,7 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         //
-        User::observe(ClientObserver::class);
+        
     }
 
     /**
@@ -24,5 +24,6 @@ class AppServiceProvider extends ServiceProvider
     {
         //
         \Stripe\Stripe::setApiKey(env("STRIPE_SECRET_KEY"));
+        User::observe(ClientObserver::class);
     }
 }

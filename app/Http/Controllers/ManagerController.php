@@ -21,8 +21,8 @@ class ManagerController extends Controller
     {
 // Inertia::render('Manager/Index', [,
         // ])
-        return 
-            User::select([
+        // return 
+            $pagination = User::select([
                 'id',
                 'name',
                 'email',
@@ -37,8 +37,27 @@ class ManagerController extends Controller
             ])->where('role', 'manager')
             ->latest()
             ->paginate(10);
+            return Inertia::render('Manager/Index', [
+                'pagination' => $pagination
+            ]);
 
     }
+    public function show($id)
+    {
+       
+            $manager = User::where('id', $id)
+                ->where('role', 'manager')
+                ->first();
+
+            if (!$manager) {
+                abort(404);
+            }
+
+                return Inertia::render('Manager/Show', [
+                    'manager' => $manager,
+                ]);
+            
+        }
 
     public function store(StoreManagerRequest $request)
     {
@@ -57,12 +76,7 @@ class ManagerController extends Controller
             return back()->with('error', 'Failed to create manager. Please try again.');
         }
     }
-    public function show(User $manager)
-    {
-        return Inertia::render('Manager/Show', [
-            'manager' => $manager,
-        ]);
-    }
+ 
     public function edit(User $manager)
     {
         return view('managers.edit', ['manager'=> $manager]);

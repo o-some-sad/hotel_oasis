@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
+use Carbon\Carbon;
 
 class AdminSeeder extends Seeder
 {
@@ -20,13 +21,13 @@ class AdminSeeder extends Seeder
         $admin = User::firstOrCreate([
             'email' => 'admin@admin.com',
         ], [
-            'id' => 1,
+            // 'id' => 1,
             'role' => 'admin',
             'name' => 'Admin',
             'email' => 'admin@admin.com',
             'password' => bcrypt('123456'),
             'is_approved' => true,
-            'email_verified_at' => now(),
+            'email_verified_at' => Carbon::now(),
            'mobile' => '+1234567890',
            'national_id' => '00000000000000',
            'avatar_img' => '/public/avatar.png',

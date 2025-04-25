@@ -194,7 +194,6 @@ class ClientController extends Controller
             //     abort(403);
             // }
             $client->update(['is_approved' => true]);
-            $client->notify(new ClientApproved());
             return redirect()->route('clients.index')->with('success', 'Client approved successfully.');
         } catch(\Exception $e) {
             \Log::error('Error approving client: ' . $e->getMessage());

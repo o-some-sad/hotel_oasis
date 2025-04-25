@@ -61,6 +61,12 @@ const mainNavItems: NavItem[] = [
         icon: PersonStanding,
         allowedRoles: ['admin', 'manager'],
     },
+    {
+        title: 'Managers',
+        href: '/managers',
+        icon: PersonStanding,
+        allowedRoles: ['admin'],
+    },
 ];
 
 const footerNavItems: NavItem[] = [
