@@ -54,6 +54,28 @@ export interface Floor {
     action?: boolean; // Whether the current user can edit/delete this floor
 }
 
+export interface Room {
+    id: number;
+    name: string;
+    floor_id: number;
+    floor: Floor;
+    created_by: number;
+    creator?: User;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface Reservation {
+    id: number;
+    client_id: number;
+    client: User;
+    room_id: number;
+    room: Room;
+    paid_price: number;
+    created_at: string;
+    updated_at: string;
+}
+
 export type BreadcrumbItemType = BreadcrumbItem;
 
 export interface Receptionist extends User {

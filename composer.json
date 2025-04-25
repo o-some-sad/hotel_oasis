@@ -17,6 +17,7 @@
         "lwwcas/laravel-countries": "^4.12",
         "maatwebsite/excel": "^3.1.46",
         "spatie/laravel-permission": "^6.17",
+        "stripe/stripe-php": "^17.1",
         "tightenco/ziggy": "^2.4"
     },
     "require-dev": {

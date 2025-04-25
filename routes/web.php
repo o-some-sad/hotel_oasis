@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\ApprovedClientsController;
 use App\Http\Controllers\FloorController;
+use App\Http\Controllers\ReservationController;
+use App\Http\Middleware\EnsureUserHasRole;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -19,6 +21,27 @@ Route::get('dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
+/*
+price_data: {
+        currency: "usd",
+        unit_amount: item.price * 100, //PRICE IS IN CENTS
+        product_data: {
+          name: item.title,
+        },
+      },
+      quantity: item.quantity,
+
+*/
+
+Route::get('/my-reservations/success', [ReservationController::class, 'success'])->middleware(['auth', EnsureUserHasRole::class .':client'])->name('payment.success');
+Route::get('/my-reservations/cancel', [ReservationController::class, 'cancel'])->middleware(['auth', EnsureUserHasRole::class .':client'])->name('payment.cancel');
+Route::get('/my-reservations/error', [ReservationController::class, 'error'])->middleware(['auth', EnsureUserHasRole::class .':client'])->name('payment.error');
+
+
+Route::resource('my-reservations', ReservationController::class)->middleware([
+    'auth',
+    EnsureUserHasRole::class . ":client",
+]);
 
 //TODO: move to api.php after installing Laravel Sanctum
 Route::get('/api/countries', function (Response $response) {
@@ -108,5 +131,13 @@ Route::resource('rooms', ManageRoomController::class)->middleware('auth');
 Route::resource('floors', FloorController::class)->middleware(['auth', 'verified']);
 
 
+
+Route::get('/', function () {
+    return Inertia::render('Home');
+});
+
+Route::get('/booking', function () {
+    return Inertia::render('Booking');
+})->name('booking');
 
 
