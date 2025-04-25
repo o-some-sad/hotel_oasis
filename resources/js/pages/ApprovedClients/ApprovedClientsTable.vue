@@ -142,9 +142,6 @@ const table = useVueTable({
                     :model-value="table.getColumn('email')?.getFilterValue() as string"
                     @update:model-value="table.getColumn('email')?.setFilterValue($event)"
                 />
-                <Button variant="outline">
-                    <Plus />
-                </Button>
             </div>
             <DropdownMenu>
                 <DropdownMenuTrigger as-child>

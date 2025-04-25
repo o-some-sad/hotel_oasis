@@ -228,9 +228,6 @@ const submit = () => {
         preserveScroll: true,
         forceFormData: true,
         onSuccess: () => form.reset(),
-        onError: (errors) => {
-            alert('Failed to create client. Please check the form and try again.');
-        },
     });
 };
 </script>
