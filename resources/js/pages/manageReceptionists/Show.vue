@@ -41,7 +41,7 @@
                                     <div v-for="(label, key) in infoFields" :key="key" class="rounded-md">
                                         <p class="text-sm font-medium">{{ label }}</p>
                                         <p class="mt-1 text-lg capitalize">
-                                            {{ key === 'created_at' ? formatDate(receptionist[key]) : receptionist[key] }}
+                                            {{ key === 'created_at' ? dayjs(receptionist[key]).format('YYYY-MM-DD ') : receptionist[key] }}
                                         </p>
                                     </div>
                                     <div v-if="receptionist.banned_at" class="rounded-md">
@@ -96,6 +96,7 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import dayjs from 'dayjs';
 import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { Head, Link, router } from '@inertiajs/vue3';
