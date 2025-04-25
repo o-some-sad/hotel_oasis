@@ -46,7 +46,7 @@ const submit = () => {
                     <FormItem>
                         <FormLabel>Price (in dollars)</FormLabel>
                         <FormControl>
-                            <Input type="number" v-model="form.price" class="rounded-md" />
+                            <Input type="number" v-model="form.price"   step="0.1"  class="rounded-md" />
                         </FormControl>
                         <p v-if="props.errors.price" class="text-sm text-red-500 mt-1">{{ props.errors.price }}</p>
                     </FormItem>
