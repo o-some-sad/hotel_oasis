@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ApprovedClientsController;
+use App\Http\Controllers\ClientsReservationsController;
 use App\Http\Controllers\FloorController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Middleware\EnsureUserHasRole;
@@ -139,5 +140,16 @@ Route::get('/', function () {
 Route::get('/booking', function () {
     return Inertia::render('Booking');
 })->name('booking');
+
+// Clients Reservations for staff (admin, manager, receptionist)
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/clients-reservations', [ClientsReservationsController::class, 'index'])
+        ->middleware(EnsureUserHasRole::class . ':admin,manager,receptionist')
+        ->name('clients-reservations.index');
+        
+    Route::get('/clients-reservations/{reservation}', [ClientsReservationsController::class, 'show'])
+        ->middleware(EnsureUserHasRole::class . ':admin,manager,receptionist')
+        ->name('clients-reservations.show');
+});
 
 

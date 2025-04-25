@@ -5,7 +5,7 @@ import NavUser from '@/components/NavUser.vue';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { SharedData, User, type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/vue3';
-import { BookOpen, Building, Folder, LayoutGrid, PersonStanding, SquareUserRound, UsersRound } from 'lucide-vue-next';
+import { BookOpen, Building, LayoutGrid, PersonStanding, SquareUserRound, Users, UsersRound } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
 
 const page = usePage<SharedData>();
@@ -54,7 +54,12 @@ const mainNavItems: NavItem[] = [
         icon: PersonStanding,
         allowedRoles: ['admin', 'manager', 'receptionist'],
     },
-
+    {
+        title: 'Clients Reservations',
+        href: '/clients-reservations',
+        icon: Users,
+        allowedRoles: ['admin', 'manager', 'receptionist'],
+    },
     {
         title: 'Manage Rooms',
         href: '/rooms',
@@ -63,9 +68,7 @@ const mainNavItems: NavItem[] = [
     },
 ];
 
-const footerNavItems: NavItem[] = [
-
-];
+const footerNavItems: NavItem[] = [];
 </script>
 
 <template>
